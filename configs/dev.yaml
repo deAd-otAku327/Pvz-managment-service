@@ -1,0 +1,11 @@
+server:
+  host: localhost
+  port: 8080
+  response_time: 100ms
+  rps: 1000 
+
+  log_level: info
+
+db-conn:
+  url: postgres://postgres:qwerty123@localhost:5432/pvz-managment?sslmode=disable
+  max_open_conns: 15
