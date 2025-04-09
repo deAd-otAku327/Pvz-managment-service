@@ -6,9 +6,17 @@ import (
 	"log/slog"
 	"net/http"
 	"pvz-service/internal/app/config"
+	"pvz-service/internal/app/controller"
+	"pvz-service/internal/app/db"
+	"pvz-service/internal/app/service"
+	"pvz-service/internal/tokenizer"
+	"pvz-service/pkg/cryptor"
+	"pvz-service/pkg/middleware"
 
 	"github.com/gorilla/mux"
 )
+
+const AppName = "pvz-management-service"
 
 type Server struct {
 	cfg    *config.Config
@@ -16,8 +24,25 @@ type Server struct {
 }
 
 func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
+	cryptor := cryptor.New()
+	tokenizer := tokenizer.New(AppName, cfg.JWTKey)
+
+	storage, err := db.New(cfg.DBConn)
+	if err != nil {
+		return nil, err
+	}
+
+	service := service.New(storage, logger, cryptor, tokenizer)
+
+	controller := controller.New(service)
 
 	router := mux.NewRouter()
+
+	router.Use(middleware.RpsLimit(cfg.RPS))
+	router.Use(middleware.ResponseTimeLimit(cfg.ResponseTime))
+	router.Use(middleware.Logging(logger))
+
+	router.HandleFunc("/dummyLogin", controller.DummyLogin()).Methods(http.MethodGet)
 
 	return &Server{
 		cfg: cfg,
