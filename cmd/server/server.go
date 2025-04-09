@@ -8,10 +8,11 @@ import (
 	"pvz-service/internal/app/config"
 	"pvz-service/internal/app/controller"
 	"pvz-service/internal/app/db"
+	"pvz-service/internal/app/middleware"
 	"pvz-service/internal/app/service"
+	"pvz-service/internal/models"
 	"pvz-service/internal/tokenizer"
 	"pvz-service/pkg/cryptor"
-	"pvz-service/pkg/middleware"
 
 	"github.com/gorilla/mux"
 )
@@ -43,6 +44,33 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 	router.Use(middleware.ResponseTimeLimit(cfg.ResponseTime))
 
 	router.HandleFunc("/dummyLogin", controller.DummyLogin()).Methods(http.MethodPost)
+	router.HandleFunc("/register", controller.Register()).Methods(http.MethodPost)
+	router.HandleFunc("/login", controller.Login()).Methods(http.MethodPost)
+
+	modRouter := router.PathPrefix("").Subrouter()
+	modRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
+		models.RoleModerator.String(): {},
+	}))
+
+	modRouter.HandleFunc("/pvz", controller.CreatePvz()).Methods(http.MethodPost)
+
+	empRouter := router.PathPrefix("").Subrouter()
+	empRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
+		models.RoleEmployye.String(): {},
+	}))
+
+	empRouter.HandleFunc("/receptions", controller.CreateReception()).Methods(http.MethodPost)
+	empRouter.HandleFunc("/products", controller.AddProduct()).Methods(http.MethodPost)
+	empRouter.HandleFunc("/pvz/{pvzId}/close_last_reception", controller.CloseLastReception()).Methods(http.MethodPost)
+	empRouter.HandleFunc("/pvz/{pvzId}/delete_last_product", controller.DeleteLastProduct()).Methods(http.MethodPost)
+
+	modAndEmpRouter := router.PathPrefix("").Subrouter()
+	modAndEmpRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
+		models.RoleEmployye.String():  {},
+		models.RoleModerator.String(): {},
+	}))
+
+	modAndEmpRouter.HandleFunc("/pvz", controller.GetPvzList()).Methods(http.MethodGet)
 
 	return &Server{
 		cfg: cfg,

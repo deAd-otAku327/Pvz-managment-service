@@ -13,7 +13,10 @@ import (
 
 type contextKey int8
 
-const CtxRequestIDKey contextKey = iota
+const (
+	RequestIDKey contextKey = iota
+	UserRoleKey
+)
 
 func Logging(log *slog.Logger) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
@@ -33,7 +36,7 @@ func Logging(log *slog.Logger) mux.MiddlewareFunc {
 
 			startReq := time.Now()
 
-			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), CtxRequestIDKey, rid)))
+			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), RequestIDKey, rid)))
 
 			responseTime := time.Since(startReq).Milliseconds()
 

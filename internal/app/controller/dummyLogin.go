@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"pvz-service/internal/app/middleware"
 	"pvz-service/pkg/response"
 )
 
@@ -25,7 +26,7 @@ func (c *controller) DummyLogin() http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Set-Cookie", fmt.Sprintf("token=%s", *token))
+		w.Header().Set("Set-Cookie", fmt.Sprintf("%s=%s", middleware.CookieName, *token))
 
 		response.MakeResponseJSON(w, http.StatusOK, nil)
 	}
