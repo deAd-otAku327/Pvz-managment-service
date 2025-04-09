@@ -39,10 +39,10 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 	router := mux.NewRouter()
 
 	router.Use(middleware.RpsLimit(cfg.RPS))
-	router.Use(middleware.ResponseTimeLimit(cfg.ResponseTime))
 	router.Use(middleware.Logging(logger))
+	router.Use(middleware.ResponseTimeLimit(cfg.ResponseTime))
 
-	router.HandleFunc("/dummyLogin", controller.DummyLogin()).Methods(http.MethodGet)
+	router.HandleFunc("/dummyLogin", controller.DummyLogin()).Methods(http.MethodPost)
 
 	return &Server{
 		cfg: cfg,

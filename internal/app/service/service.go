@@ -1,13 +1,22 @@
 package service
 
 import (
+	"context"
+	"errors"
 	"log/slog"
 	"pvz-service/internal/app/db"
 	"pvz-service/internal/tokenizer"
 	"pvz-service/pkg/cryptor"
+	"pvz-service/pkg/werrors"
+)
+
+var (
+	errSmthWentWrong = errors.New("something went wrong")
+	errInvalidRole   = errors.New("invalid role provided")
 )
 
 type PvzService interface {
+	DummyLogin(ctx context.Context, role string) (*string, werrors.Werror)
 }
 
 type pvzService struct {

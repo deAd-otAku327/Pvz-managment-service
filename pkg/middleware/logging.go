@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -25,7 +24,9 @@ func Logging(log *slog.Logger) mux.MiddlewareFunc {
 			w.Header().Set("X-Request-ID", rid)
 
 			log.Info(
-				fmt.Sprintf("%s %s", r.Method, r.URL.Path),
+				"Request:",
+				slog.String("method", r.Method),
+				slog.String("url", r.URL.Path),
 				slog.String("client", client),
 				slog.String("request_id", rid),
 			)
@@ -37,9 +38,9 @@ func Logging(log *slog.Logger) mux.MiddlewareFunc {
 			responseTime := time.Since(startReq).Milliseconds()
 
 			log.Info(
-				fmt.Sprintf("%s %s", r.Method, r.URL.Path),
+				"Response:",
 				slog.String("client", client),
-				slog.String("resp_time (ms)", strconv.Itoa(int(responseTime))),
+				slog.String("resp_time", strconv.Itoa(int(responseTime))),
 				slog.String("request_id", rid),
 			)
 		})

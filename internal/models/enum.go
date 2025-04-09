@@ -10,11 +10,21 @@ const (
 	RoleModerator
 )
 
-var roleName = map[UserRole]string{
+var roleToName = map[UserRole]string{
 	RoleEmployye:  "employee",
 	RoleModerator: "moderator",
 }
 
+var nameToRole = map[string]UserRole{
+	"employee":  RoleEmployye,
+	"moderator": RoleModerator,
+}
+
+func CheckRole(role string) bool {
+	_, ok := nameToRole[role]
+	return ok
+}
+
 func (r UserRole) String() string {
-	return roleName[r]
+	return roleToName[r]
 }
