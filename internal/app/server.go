@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"pvz-service/internal/app/config"
-	"pvz-service/internal/app/controller"
-	"pvz-service/internal/app/db"
-	"pvz-service/internal/app/middleware"
-	"pvz-service/internal/app/service"
-	"pvz-service/internal/models"
+	"pvz-service/internal/config"
+	"pvz-service/internal/controller"
+	"pvz-service/internal/db"
+	"pvz-service/internal/enum"
+	"pvz-service/internal/middleware"
+	"pvz-service/internal/service"
 	"pvz-service/internal/tokenizer"
 	"pvz-service/pkg/cryptor"
 
@@ -49,14 +49,14 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 
 	modRouter := router.PathPrefix("").Subrouter()
 	modRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
-		models.Moderator.String(): {},
+		enum.Moderator.String(): {},
 	}))
 
 	modRouter.HandleFunc("/pvz", controller.CreatePvz()).Methods(http.MethodPost)
 
 	empRouter := router.PathPrefix("").Subrouter()
 	empRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
-		models.Employye.String(): {},
+		enum.Employye.String(): {},
 	}))
 
 	empRouter.HandleFunc("/receptions", controller.CreateReception()).Methods(http.MethodPost)
@@ -66,8 +66,8 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 
 	modAndEmpRouter := router.PathPrefix("").Subrouter()
 	modAndEmpRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
-		models.Employye.String():  {},
-		models.Moderator.String(): {},
+		enum.Employye.String():  {},
+		enum.Moderator.String(): {},
 	}))
 
 	modAndEmpRouter.HandleFunc("/pvz", controller.GetPvzList()).Methods(http.MethodGet)

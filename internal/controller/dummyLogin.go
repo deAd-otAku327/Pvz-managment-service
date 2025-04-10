@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"pvz-service/internal/app/middleware"
+	"pvz-service/internal/middleware"
 	"pvz-service/pkg/response"
 )
 

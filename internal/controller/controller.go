@@ -3,7 +3,7 @@ package controller
 import (
 	"errors"
 	"net/http"
-	"pvz-service/internal/app/service"
+	"pvz-service/internal/service"
 )
 
 var errInvalidRequestBody = errors.New("invalid request body provided")
@@ -23,10 +23,10 @@ type Controller interface {
 }
 
 type controller struct {
-	service service.PvzService
+	service service.Service
 }
 
-func New(s service.PvzService) Controller {
+func New(s service.Service) Controller {
 	return &controller{
 		service: s,
 	}

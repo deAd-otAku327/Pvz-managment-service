@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
-	"pvz-service/internal/app/config"
+	"pvz-service/internal/config"
 	"pvz-service/internal/models"
 
 	_ "github.com/lib/pq"

@@ -9,8 +9,8 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"pvz-service/cmd/server"
-	"pvz-service/internal/app/config"
+	server "pvz-service/internal/app"
+	"pvz-service/internal/config"
 	"pvz-service/pkg/logger"
 	"syscall"
 

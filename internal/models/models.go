@@ -4,8 +4,8 @@ import "time"
 
 type User struct {
 	ID    int
-	Email string `json:"email"`
-	Role  string `json:"role"`
+	Email string
+	Role  string
 }
 
 type PVZ struct {
@@ -18,14 +18,14 @@ type Reception struct {
 	ID       int       `json:"id"`
 	DateTime time.Time `json:"dateTime"`
 	PvzID    int       `json:"pvzId"`
+	Products []Product `json:"products,"`
 	Status   string    `json:"status"`
 }
 
 type Product struct {
-	ID          int
-	DateTime    time.Time `json:"dateTime"`
-	Type        string    `json:"type"`
-	ReceptionID int       `json:"receptionId"`
+	ID       int
+	DateTime time.Time `json:"dateTime"`
+	Type     string    `json:"type"`
 }
 
 type SummaryInfo []PVZSummary
