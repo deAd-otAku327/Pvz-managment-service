@@ -17,6 +17,6 @@ func (c *controller) DeleteLastProduct() http.HandlerFunc {
 			return
 		}
 
-		response.MakeResponseJSON(w, http.StatusCreated, nil)
+		response.MakeResponseJSON(w, http.StatusOK, nil)
 	}
 }

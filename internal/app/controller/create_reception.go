@@ -24,6 +24,6 @@ func (c *controller) CreateReception() http.HandlerFunc {
 			return
 		}
 
-		response.MakeResponseJSON(w, http.StatusOK, reception)
+		response.MakeResponseJSON(w, http.StatusCreated, reception)
 	}
 }

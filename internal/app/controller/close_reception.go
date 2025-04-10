@@ -19,6 +19,6 @@ func (c *controller) CloseLastReception() http.HandlerFunc {
 			return
 		}
 
-		response.MakeResponseJSON(w, http.StatusCreated, reception)
+		response.MakeResponseJSON(w, http.StatusOK, reception)
 	}
 }
