@@ -49,14 +49,14 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 
 	modRouter := router.PathPrefix("").Subrouter()
 	modRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
-		models.RoleModerator.String(): {},
+		models.Moderator.String(): {},
 	}))
 
 	modRouter.HandleFunc("/pvz", controller.CreatePvz()).Methods(http.MethodPost)
 
 	empRouter := router.PathPrefix("").Subrouter()
 	empRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
-		models.RoleEmployye.String(): {},
+		models.Employye.String(): {},
 	}))
 
 	empRouter.HandleFunc("/receptions", controller.CreateReception()).Methods(http.MethodPost)
@@ -66,8 +66,8 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 
 	modAndEmpRouter := router.PathPrefix("").Subrouter()
 	modAndEmpRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
-		models.RoleEmployye.String():  {},
-		models.RoleModerator.String(): {},
+		models.Employye.String():  {},
+		models.Moderator.String(): {},
 	}))
 
 	modAndEmpRouter.HandleFunc("/pvz", controller.GetPvzList()).Methods(http.MethodGet)

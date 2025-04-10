@@ -6,18 +6,18 @@ type ReceptionStatus int
 type ProductType int
 
 const (
-	RoleEmployye UserRole = iota
-	RoleModerator
+	Employye UserRole = iota
+	Moderator
 )
 
 var roleToName = map[UserRole]string{
-	RoleEmployye:  "employee",
-	RoleModerator: "moderator",
+	Employye:  "employee",
+	Moderator: "moderator",
 }
 
 var nameToRole = map[string]UserRole{
-	"employee":  RoleEmployye,
-	"moderator": RoleModerator,
+	"employee":  Employye,
+	"moderator": Moderator,
 }
 
 func CheckRole(role string) bool {
@@ -27,4 +27,31 @@ func CheckRole(role string) bool {
 
 func (r UserRole) String() string {
 	return roleToName[r]
+}
+
+const (
+	Moscow City = iota
+	StPetersburg
+	Kazan
+)
+
+var cityToName = map[City]string{
+	Moscow:       "Москва",
+	StPetersburg: "Санкт-Петербург",
+	Kazan:        "Казань",
+}
+
+var nameToCity = map[string]City{
+	"Москва":          Moscow,
+	"Санкт-Петербург": StPetersburg,
+	"Казань":          Kazan,
+}
+
+func CheckCity(city string) bool {
+	_, ok := nameToCity[city]
+	return ok
+}
+
+func (c City) String() string {
+	return cityToName[c]
 }

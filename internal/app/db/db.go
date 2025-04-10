@@ -1,13 +1,18 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"pvz-service/internal/app/config"
+	"pvz-service/internal/models"
 
 	_ "github.com/lib/pq"
 )
 
 type DB interface {
+	CreatePvz(ctx context.Context, city string) (*models.PVZ, error)
+	GetPvzList(ctx context.Context, filters *models.FilterParams) (*models.SummaryInfo, error)
+	CreateReception(ctx context.Context, pvzID int) (*models.Reception, error)
 }
 
 type storage struct {
