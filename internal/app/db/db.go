@@ -13,6 +13,9 @@ type DB interface {
 	CreatePvz(ctx context.Context, city string) (*models.PVZ, error)
 	GetPvzList(ctx context.Context, filters *models.FilterParams) (*models.SummaryInfo, error)
 	CreateReception(ctx context.Context, pvzID int) (*models.Reception, error)
+	AddProduct(ctx context.Context, pType string, pvzID int) (*models.Product, error)
+	CloseReception(ctx context.Context, pvzID int) (*models.Reception, error)
+	DeleteProduct(ctx context.Context, pvzID int) error
 }
 
 type storage struct {

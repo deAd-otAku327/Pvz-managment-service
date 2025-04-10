@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 	"pvz-service/pkg/response"
 )
@@ -19,8 +18,6 @@ func (c *controller) GetPvzList() http.HandlerFunc {
 		endDate := r.URL.Query().Get(paramEndDate)
 		page := r.URL.Query().Get(paramPage)
 		limit := r.URL.Query().Get(paramLimit)
-
-		log.Println("DEBUG", startDate)
 
 		summaryInfo, serviceErr := c.service.GetPvzList(r.Context(), startDate, endDate, page, limit)
 		if serviceErr != nil {

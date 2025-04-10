@@ -12,9 +12,11 @@ import (
 )
 
 var (
-	errSmthWentWrong = errors.New("something went wrong")
-	errInvalidRole   = errors.New("invalid role provided")
-	errInvalidCity   = errors.New("invalid city provided")
+	errSmthWentWrong      = errors.New("something went wrong")
+	errInvalidPvzID       = errors.New("invalid pvz id provided")
+	errInvalidRole        = errors.New("invalid role provided")
+	errInvalidCity        = errors.New("invalid city provided")
+	errInvalidProductType = errors.New("invalid product type provided")
 )
 
 type PvzService interface {
@@ -22,6 +24,9 @@ type PvzService interface {
 	CreatePvz(ctx context.Context, city string) (*models.PVZ, werrors.Werror)
 	GetPvzList(ctx context.Context, startDate, endDate, page, limit string) (*models.SummaryInfo, werrors.Werror)
 	CreateReception(ctx context.Context, pvzID int) (*models.Reception, werrors.Werror)
+	AddProduct(ctx context.Context, pType string, pvzID int) (*models.Product, werrors.Werror)
+	CloseReception(ctx context.Context, pvzID string) (*models.Reception, werrors.Werror)
+	DeleteProduct(ctx context.Context, pvzID string) werrors.Werror
 }
 
 type pvzService struct {
