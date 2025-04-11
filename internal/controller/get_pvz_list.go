@@ -9,13 +9,6 @@ import (
 	"github.com/gorilla/schema"
 )
 
-const (
-	paramStartDate = "startDate"
-	paramEndDate   = "endDate"
-	paramPage      = "page"
-	paramLimit     = "limit"
-)
-
 func (c *controller) GetPvzList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
