@@ -15,5 +15,5 @@ type ProductResponseDTO struct {
 	ID          int       `json:"id,omitempty"`
 	DateTime    time.Time `json:"dateTime"`
 	Type        string    `json:"type"`
-	ReceptionId string    `json:"receptionId"`
+	ReceptionID string    `json:"receptionId"`
 }

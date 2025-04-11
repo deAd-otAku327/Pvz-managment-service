@@ -14,7 +14,7 @@ func (c *controller) DeleteLastProduct() http.HandlerFunc {
 		// Regexps on routes guarantees no error.
 		p, _ := strconv.Atoi(mux.Vars(r)[paramPvzID]) //nolint:errcheck
 		request := dto.DeleteProductRequestDTO{
-			PvzId: p,
+			PvzID: p,
 		}
 
 		serviceErr := c.service.DeleteProduct(r.Context(), &request)
