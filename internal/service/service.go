@@ -4,7 +4,8 @@ import (
 	"context"
 	"log/slog"
 	"pvz-service/internal/db"
-	"pvz-service/internal/models"
+	"pvz-service/internal/dto"
+	"pvz-service/internal/entities"
 	"pvz-service/internal/service/auth"
 	"pvz-service/internal/service/product"
 	"pvz-service/internal/service/pvz"
@@ -41,26 +42,26 @@ func (s *service) DummyLogin(ctx context.Context, role string) (*string, werrors
 	return s.authService.DummyLogin(ctx, role)
 }
 
-func (s *service) AddProduct(ctx context.Context, pType string, pvzID int) (*models.Product, werrors.Werror) {
-	return s.productService.AddProduct(ctx, pType, pvzID)
+func (s *service) AddProduct(ctx context.Context, request *dto.AddProductRequestDTO) (*dto.ProductResponseDTO, werrors.Werror) {
+	return s.productService.AddProduct(ctx, request)
 }
 
-func (s *service) DeleteProduct(ctx context.Context, id string) werrors.Werror {
-	return s.productService.DeleteProduct(ctx, id)
+func (s *service) DeleteProduct(ctx context.Context, request *dto.DeleteProductRequestDTO) werrors.Werror {
+	return s.productService.DeleteProduct(ctx, request)
 }
 
-func (s *service) CreateReception(ctx context.Context, pvzID int) (*models.Reception, werrors.Werror) {
-	return s.receptionService.CreateReception(ctx, pvzID)
+func (s *service) CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*entities.Reception, werrors.Werror) {
+	return s.receptionService.CreateReception(ctx, request)
 }
 
-func (s *service) CloseReception(ctx context.Context, pvzID string) (*models.Reception, werrors.Werror) {
-	return s.receptionService.CloseReception(ctx, pvzID)
+func (s *service) CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*entities.Reception, werrors.Werror) {
+	return s.receptionService.CloseReception(ctx, request)
 }
 
-func (s *service) CreatePvz(ctx context.Context, city string) (*models.PVZ, werrors.Werror) {
-	return s.pvzService.CreatePvz(ctx, city)
+func (s *service) CreatePvz(ctx context.Context, request *dto.CreatePvzRequestDTO) (*dto.PvzResponseDTO, werrors.Werror) {
+	return s.pvzService.CreatePvz(ctx, request)
 }
 
-func (s *service) GetPvzList(ctx context.Context, startDate, endDate, page, limit string) (*models.SummaryInfo, werrors.Werror) {
-	return s.pvzService.GetPvzList(ctx, startDate, endDate, page, limit)
+func (s *service) GetPvzList(ctx context.Context, request *dto.PvzFilterParamsDTO) (*dto.GetPvzListResponseDTO, werrors.Werror) {
+	return s.pvzService.GetPvzList(ctx, request)
 }

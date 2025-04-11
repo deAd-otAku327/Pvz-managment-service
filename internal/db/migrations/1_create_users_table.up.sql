@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS "users"
     "id" SERIAL PRIMARY KEY,
     "email" TEXT NOT NULL UNIQUE,
     "password" TEXT NOT NULL,
-    "role" VARCHAR(15),
+    "role" VARCHAR(15)
 );

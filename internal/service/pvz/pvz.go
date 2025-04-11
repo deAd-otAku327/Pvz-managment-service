@@ -6,14 +6,15 @@ import (
 	"net/http"
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/db"
-	"pvz-service/internal/enum"
-	"pvz-service/internal/models"
+	"pvz-service/internal/dto"
+	dtomap "pvz-service/internal/mappers/dto"
+	entitymap "pvz-service/internal/mappers/entity"
 	"pvz-service/pkg/werrors"
 )
 
 type PvzService interface {
-	CreatePvz(ctx context.Context, city string) (*models.PVZ, werrors.Werror)
-	GetPvzList(ctx context.Context, startDate, endDate, page, limit string) (*models.SummaryInfo, werrors.Werror)
+	CreatePvz(ctx context.Context, request *dto.CreatePvzRequestDTO) (*dto.PvzResponseDTO, werrors.Werror)
+	GetPvzList(ctx context.Context, request *dto.PvzFilterParamsDTO) (*dto.GetPvzListResponseDTO, werrors.Werror)
 }
 
 type pvzService struct {
@@ -28,36 +29,34 @@ func New(storage db.DB, logger *slog.Logger) PvzService {
 	}
 }
 
-func (s *pvzService) GetPvzList(ctx context.Context, startDate, endDate, page, limit string) (*models.SummaryInfo, werrors.Werror) {
-	params, err := NewFilterParams(
-		WithStartDate(startDate),
-		WithEndDate(endDate),
-		WithPage(page),
-		WithLimit(limit),
-	)
+func (s *pvzService) GetPvzList(ctx context.Context, request *dto.PvzFilterParamsDTO) (*dto.GetPvzListResponseDTO, werrors.Werror) {
+	params := dtomap.MapToPvzFilterParams(request)
+	err := params.Validate()
 	if err != nil {
 		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	summaryInfo, err := s.storage.GetPvzList(ctx, params)
+	pvzs, receptions, err := s.storage.GetPvzList(ctx, params)
 	if err != nil {
 		s.logger.Error("get pvz listing: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
-	return summaryInfo, nil
+	return entitymap.MapToGetPvzListResponse(pvzs, receptions), nil
 }
 
-func (s *pvzService) CreatePvz(ctx context.Context, city string) (*models.PVZ, werrors.Werror) {
-	if !enum.CheckCity(city) {
-		return nil, werrors.New(apperrors.ErrInvalidCity, http.StatusBadRequest)
+func (s *pvzService) CreatePvz(ctx context.Context, request *dto.CreatePvzRequestDTO) (*dto.PvzResponseDTO, werrors.Werror) {
+	pvzCreate := dtomap.MapToPvzCreate(request)
+	err := pvzCreate.Validate()
+	if err != nil {
+		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	pvz, err := s.storage.CreatePvz(ctx, city)
+	pvz, err := s.storage.CreatePvz(ctx, pvzCreate)
 	if err != nil {
 		s.logger.Error("create pvz: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
-	return pvz, nil
+	return entitymap.MapToPvzResponse(pvz), nil
 }

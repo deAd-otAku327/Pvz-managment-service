@@ -4,18 +4,19 @@ import (
 	"context"
 	"database/sql"
 	"pvz-service/internal/config"
+	"pvz-service/internal/entities"
 	"pvz-service/internal/models"
 
 	_ "github.com/lib/pq"
 )
 
 type DB interface {
-	CreatePvz(ctx context.Context, city string) (*models.PVZ, error)
-	GetPvzList(ctx context.Context, filters *models.FilterParams) (*models.SummaryInfo, error)
-	CreateReception(ctx context.Context, pvzID int) (*models.Reception, error)
-	AddProduct(ctx context.Context, pType string, pvzID int) (*models.Product, error)
-	CloseReception(ctx context.Context, pvzID int) (*models.Reception, error)
-	DeleteProduct(ctx context.Context, pvzID int) error
+	CreatePvz(ctx context.Context, pvzCreate *models.PvzCreate) (*entities.Pvz, error)
+	GetPvzList(ctx context.Context, filters *models.PvzFilterParams) ([]entities.Pvz, []entities.Reception, error)
+	CreateReception(ctx context.Context, createreception *models.CreateReception) (*entities.Reception, error)
+	CloseReception(ctx context.Context, closeReception *models.CloseReception) (*entities.Reception, error)
+	AddProduct(ctx context.Context, addProduct *models.AddProduct) (*entities.Product, error)
+	DeleteProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error
 }
 
 type storage struct {

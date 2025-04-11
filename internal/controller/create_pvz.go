@@ -3,22 +3,21 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"pvz-service/internal/apperrors"
+	"pvz-service/internal/dto"
 	"pvz-service/pkg/response"
 )
 
 func (c *controller) CreatePvz() http.HandlerFunc {
-	type createPvzRequest struct {
-		City string `json:"city"`
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		request := createPvzRequest{}
+		request := dto.CreatePvzRequestDTO{}
 		err := json.NewDecoder(r.Body).Decode(&request)
-		if err != nil || request.City == "" {
-			response.MakeErrorResponseJSON(w, http.StatusBadRequest, errInvalidRequestBody)
+		if err != nil {
+			response.MakeErrorResponseJSON(w, http.StatusBadRequest, apperrors.ErrInvalidRequestBody)
 			return
 		}
 
-		pvz, serviceErr := c.service.CreatePvz(r.Context(), request.City)
+		pvz, serviceErr := c.service.CreatePvz(r.Context(), &request)
 		if serviceErr != nil {
 			response.MakeErrorResponseJSON(w, serviceErr.Code(), serviceErr)
 			return

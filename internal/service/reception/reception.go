@@ -6,14 +6,15 @@ import (
 	"net/http"
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/db"
-	"pvz-service/internal/models"
+	"pvz-service/internal/dto"
+	"pvz-service/internal/entities"
+	dtomap "pvz-service/internal/mappers/dto"
 	"pvz-service/pkg/werrors"
-	"strconv"
 )
 
 type ReceptionService interface {
-	CreateReception(ctx context.Context, pvzID int) (*models.Reception, werrors.Werror)
-	CloseReception(ctx context.Context, id string) (*models.Reception, werrors.Werror)
+	CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*entities.Reception, werrors.Werror)
+	CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*entities.Reception, werrors.Werror)
 }
 
 type receptionService struct {
@@ -28,8 +29,14 @@ func New(storage db.DB, logger *slog.Logger) ReceptionService {
 	}
 }
 
-func (s *receptionService) CreateReception(ctx context.Context, pvzID int) (*models.Reception, werrors.Werror) {
-	reception, err := s.storage.CreateReception(ctx, pvzID)
+func (s *receptionService) CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*entities.Reception, werrors.Werror) {
+	createReception := dtomap.MapToCreateReception(request)
+	err := createReception.Validate()
+	if err != nil {
+		return nil, werrors.New(err, http.StatusBadRequest)
+	}
+
+	reception, err := s.storage.CreateReception(ctx, createReception)
 	if err != nil {
 		s.logger.Error("create reception: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
@@ -38,13 +45,14 @@ func (s *receptionService) CreateReception(ctx context.Context, pvzID int) (*mod
 	return reception, nil
 }
 
-func (s *receptionService) CloseReception(ctx context.Context, id string) (*models.Reception, werrors.Werror) {
-	pvzId, err := strconv.Atoi(id) // Some extra validation after reqexps in routing.
+func (s *receptionService) CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*entities.Reception, werrors.Werror) {
+	closeReception := dtomap.MapToCloseReception(request)
+	err := closeReception.Validate()
 	if err != nil {
-		return nil, werrors.New(apperrors.ErrInvalidPvzID, http.StatusBadRequest)
+		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	reception, err := s.storage.CloseReception(ctx, pvzId)
+	reception, err := s.storage.CloseReception(ctx, closeReception)
 	if err != nil {
 		s.logger.Error("close reception: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)

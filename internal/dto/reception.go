@@ -1,0 +1,23 @@
+package dto
+
+import "time"
+
+type CreateReceptionRequestDTO struct {
+	PvzID int `json:"id"`
+}
+
+type CloseReceptionRequestDTO struct {
+	PvzID int
+}
+
+type ReceptionWithProductsDTO struct {
+	Reception ReceptionResponseDTO `json:"reception"`
+	Products  []ProductResponseDTO `json:"products"`
+}
+
+type ReceptionResponseDTO struct {
+	ID       int       `json:"id,omitempty"`
+	DateTime time.Time `json:"dateTime"`
+	PvzID    int       `json:"pvzId"`
+	Status   string    `json:"status"`
+}

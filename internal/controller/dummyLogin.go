@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"pvz-service/internal/apperrors"
 	"pvz-service/internal/middleware"
 	"pvz-service/pkg/response"
 )
@@ -16,7 +17,7 @@ func (c *controller) DummyLogin() http.HandlerFunc {
 		request := dummyLoginRequest{}
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil || request.Role == "" {
-			response.MakeErrorResponseJSON(w, http.StatusBadRequest, errInvalidRequestBody)
+			response.MakeErrorResponseJSON(w, http.StatusBadRequest, apperrors.ErrInvalidRequestBody)
 			return
 		}
 
