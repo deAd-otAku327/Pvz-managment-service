@@ -1,16 +1,16 @@
 package models
 
-import "time"
+import (
+	"pvz-service/internal/apperrors"
+	"pvz-service/internal/enum"
+	"time"
+)
 
 const (
-	defaultPage = 1
-	minPage     = 1
+	minPvzFilterPage = 1
 
-	defaultLimit = 10
-	minLimit     = 1
-	maxLimit     = 30
-
-	datetimeLayout = "2006-01-02 15:04"
+	minPvzFilterLimit = 1
+	maxPvzFilterLimit = 30
 )
 
 type PvzCreate struct {
@@ -24,10 +24,22 @@ type PvzFilterParams struct {
 	Limit     int
 }
 
-func (fp *PvzFilterParams) Validate() error {
+func (pc *PvzCreate) Validate() error {
+	if !enum.CheckCity(pc.City) {
+		return apperrors.ErrInvalidCity
+	}
+
 	return nil
 }
 
-func (pc *PvzCreate) Validate() error {
+func (fp *PvzFilterParams) Validate() error {
+	if fp.Page < minPvzFilterPage {
+		return apperrors.ErrInvalidPageParam
+	}
+
+	if fp.Limit < minPvzFilterLimit || fp.Limit > maxPvzFilterLimit {
+		return apperrors.ErrInvalidLimitParam
+	}
+
 	return nil
 }

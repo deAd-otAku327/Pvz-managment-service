@@ -20,7 +20,7 @@ func (c *controller) GetPvzList() http.HandlerFunc {
 		request := dto.PvzFilterParamsDTO{}
 		err = schema.NewDecoder().Decode(&request, r.Form)
 		if err != nil {
-			response.MakeErrorResponseJSON(w, http.StatusBadRequest, apperrors.ErrInvalidRequestParams)
+			response.MakeErrorResponseJSON(w, http.StatusBadRequest, apperrors.ErrInvalidParamFormat)
 			return
 		}
 

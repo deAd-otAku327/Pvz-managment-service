@@ -16,7 +16,7 @@ type ReceptionWithProductsDTO struct {
 }
 
 type ReceptionResponseDTO struct {
-	ID       int       `json:"id,omitempty"`
+	ID       int       `json:"id"`
 	DateTime time.Time `json:"dateTime"`
 	PvzID    int       `json:"pvzId"`
 	Status   string    `json:"status"`

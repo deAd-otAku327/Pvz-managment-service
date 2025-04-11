@@ -12,8 +12,7 @@ var (
 	ErrInvalidCity        = errors.New("invalid city provided")
 	ErrInvalidProductType = errors.New("invalid product type provided")
 
-	ErrInvalidStartDate = errors.New("invalid start date provided")
-	ErrInvalidEndDate   = errors.New("invalid end date provided")
-	ErrInvalidPage      = errors.New("invalid page provided")
-	ErrInvalidLimit     = errors.New("invalid limit provided")
+	ErrInvalidParamFormat = errors.New("invalid format of params provided")
+	ErrInvalidPageParam   = errors.New("invalid page provided")
+	ErrInvalidLimitParam  = errors.New("invalid limit provided")
 )

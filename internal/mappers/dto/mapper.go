@@ -7,8 +7,8 @@ import (
 
 func MapToPvzFilterParams(fp *dto.PvzFilterParamsDTO) *models.PvzFilterParams {
 	return &models.PvzFilterParams{
-		StartDate: fp.StartDate,
-		EndDate:   fp.EndDate,
+		StartDate: fp.StartDate.Date,
+		EndDate:   fp.EndDate.Date,
 		Page:      fp.Page,
 		Limit:     fp.Limit,
 	}
