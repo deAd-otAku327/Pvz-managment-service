@@ -41,6 +41,9 @@ func (s *receptionService) CreateReception(ctx context.Context, createReception 
 		if err == dberrors.ErrForeignKeyViolation {
 			return nil, werrors.New(apperrors.ErrInvalidPvzID, http.StatusBadRequest)
 		}
+		if err == dberrors.ErrUpdateProhibited {
+			return nil, werrors.New(apperrors.ErrReceptionIsNotClosed, http.StatusBadRequest)
+		}
 		s.logger.Error("create reception: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
