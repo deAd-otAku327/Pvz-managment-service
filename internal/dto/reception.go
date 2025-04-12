@@ -3,7 +3,7 @@ package dto
 import "time"
 
 type CreateReceptionRequestDTO struct {
-	PvzID int `json:"id"`
+	PvzID int `json:"pvzId"`
 }
 
 type CloseReceptionRequestDTO struct {

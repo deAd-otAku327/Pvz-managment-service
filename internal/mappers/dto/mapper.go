@@ -22,7 +22,8 @@ func MapToPvzCreate(cpr *dto.CreatePvzRequestDTO) *models.PvzCreate {
 
 func MapToAddProduct(apr *dto.AddProductRequestDTO) *models.AddProduct {
 	return &models.AddProduct{
-		Type: apr.Type,
+		PvzID: apr.PvzID,
+		Type:  apr.Type,
 	}
 }
 
