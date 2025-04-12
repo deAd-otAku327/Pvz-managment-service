@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"pvz-service/internal/config"
-	"pvz-service/internal/entities"
 	"pvz-service/internal/models"
 	"pvz-service/internal/storage/db/product"
 	"pvz-service/internal/storage/db/pvz"
@@ -45,23 +44,23 @@ func New(cfg config.DBConn) (DB, error) {
 	}, nil
 }
 
-func (s *storage) CreatePvz(ctx context.Context, pvzCreate *models.PvzCreate) (*entities.Pvz, error) {
+func (s *storage) CreatePvz(ctx context.Context, pvzCreate *models.PvzCreate) (*models.Pvz, error) {
 	return s.pvzStorage.CreatePvz(ctx, pvzCreate)
 }
 
-func (s *storage) GetPvzList(ctx context.Context, filters *models.PvzFilterParams) ([]entities.Pvz, []entities.Reception, error) {
+func (s *storage) GetPvzList(ctx context.Context, filters *models.PvzFilterParams) (*models.PvzList, error) {
 	return s.pvzStorage.GetPvzList(ctx, filters)
 }
 
-func (s *storage) CreateReception(ctx context.Context, createReception *models.CreateReception) (*entities.Reception, error) {
+func (s *storage) CreateReception(ctx context.Context, createReception *models.CreateReception) (*models.Reception, error) {
 	return s.receptionStorage.CreateReception(ctx, createReception)
 }
 
-func (s *storage) CloseReception(ctx context.Context, closeReception *models.CloseReception) (*entities.Reception, error) {
+func (s *storage) CloseReception(ctx context.Context, closeReception *models.CloseReception) (*models.Reception, error) {
 	return s.receptionStorage.CloseReception(ctx, closeReception)
 }
 
-func (s *storage) AddProduct(ctx context.Context, addProduct *models.AddProduct) (*entities.Product, error) {
+func (s *storage) AddProduct(ctx context.Context, addProduct *models.AddProduct) (*models.Product, error) {
 	return s.productStorage.AddProduct(ctx, addProduct)
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"pvz-service/internal/dto"
-	"pvz-service/internal/entities"
 	"pvz-service/internal/service/auth"
 	"pvz-service/internal/service/product"
 	"pvz-service/internal/service/pvz"
@@ -50,11 +49,11 @@ func (s *service) DeleteProduct(ctx context.Context, request *dto.DeleteProductR
 	return s.productService.DeleteProduct(ctx, request)
 }
 
-func (s *service) CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*entities.Reception, werrors.Werror) {
+func (s *service) CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror) {
 	return s.receptionService.CreateReception(ctx, request)
 }
 
-func (s *service) CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*entities.Reception, werrors.Werror) {
+func (s *service) CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror) {
 	return s.receptionService.CloseReception(ctx, request)
 }
 

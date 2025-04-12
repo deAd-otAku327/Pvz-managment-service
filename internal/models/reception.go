@@ -1,6 +1,9 @@
 package models
 
-import "pvz-service/internal/apperrors"
+import (
+	"pvz-service/internal/apperrors"
+	"time"
+)
 
 type CreateReception struct {
 	PvzID int
@@ -8,6 +11,18 @@ type CreateReception struct {
 
 type CloseReception struct {
 	PvzID int
+}
+
+type Reception struct {
+	ID       int
+	DateTime time.Time
+	PvzID    int
+	Status   string
+}
+
+type ReceptionWithProducts struct {
+	Reception *Reception
+	Products  []*Product
 }
 
 func (cr *CreateReception) Validate() error {
@@ -24,4 +39,23 @@ func (cr *CloseReception) Validate() error {
 	}
 
 	return nil
+}
+
+func (r *Reception) Validate() error {
+	return nil
+}
+
+func (rwp *ReceptionWithProducts) Validate() error {
+	return func() error {
+		if err := rwp.Reception.Validate(); err != nil {
+			return err
+		}
+
+		for _, r := range rwp.Products {
+			if err := r.Validate(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}()
 }

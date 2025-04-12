@@ -24,6 +24,19 @@ type PvzFilterParams struct {
 	Limit     int
 }
 
+type PvzList []*PvzWithReceptions
+
+type PvzWithReceptions struct {
+	Pvz        *Pvz
+	Receptions []*ReceptionWithProducts
+}
+
+type Pvz struct {
+	ID               int
+	RegistrationDate time.Time
+	City             string
+}
+
 func (pc *PvzCreate) Validate() error {
 	if !enum.CheckCity(pc.City) {
 		return apperrors.ErrInvalidCity
@@ -41,5 +54,37 @@ func (fp *PvzFilterParams) Validate() error {
 		return apperrors.ErrInvalidLimitParam
 	}
 
+	return nil
+}
+
+func (pl PvzList) Validate() error {
+	return func() error {
+		for _, r := range pl {
+			if err := r.Validate(); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}()
+}
+
+func (pwr *PvzWithReceptions) Validate() error {
+	return func() error {
+		if err := pwr.Pvz.Validate(); err != nil {
+			return err
+		}
+
+		for _, r := range pwr.Receptions {
+			if err := r.Validate(); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}()
+}
+
+func (p *Pvz) Validate() error {
 	return nil
 }

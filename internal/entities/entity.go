@@ -18,12 +18,12 @@ type Reception struct {
 	ID       int
 	DateTime time.Time
 	PvzID    int
-	Products []Product
 	Status   string
 }
 
 type Product struct {
-	ID       int
-	DateTime time.Time
-	Type     string
+	ID          int
+	DateTime    time.Time
+	ReceptionID int
+	Type        string
 }

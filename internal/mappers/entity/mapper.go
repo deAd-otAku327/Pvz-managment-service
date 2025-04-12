@@ -1,18 +1,22 @@
 package entity
 
 import (
-	"pvz-service/internal/dto"
 	"pvz-service/internal/entities"
+	"pvz-service/internal/models"
 )
 
-func MapToPvzResponse(pvz *entities.Pvz) *dto.PvzResponseDTO {
-	return &dto.PvzResponseDTO{}
+func MapToPvzList(pvzs []entities.Pvz, recepts []entities.Reception, products []entities.Product) *models.PvzList {
+	return &models.PvzList{}
 }
 
-func MapToGetPvzListResponse(pvzs []entities.Pvz, receptions []entities.Reception) *dto.GetPvzListResponseDTO {
-	return &dto.GetPvzListResponseDTO{}
+func MapToPvz(pvz entities.Pvz) *models.Pvz {
+	return &models.Pvz{}
 }
 
-func MapToProductResponse(p *entities.Product) *dto.ProductResponseDTO {
-	return &dto.ProductResponseDTO{}
+func MapToReception(reception *entities.Reception) *models.Reception {
+	return &models.Reception{}
+}
+
+func MapToProduct(product *entities.Product) *models.Product {
+	return &models.Product{}
 }

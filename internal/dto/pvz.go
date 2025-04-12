@@ -8,11 +8,11 @@ type CreatePvzRequestDTO struct {
 	City string `json:"city"`
 }
 
-type GetPvzListResponseDTO []PvzWithReceptionsDTO
+type GetPvzListResponseDTO []*PvzWithReceptionsDTO
 
 type PvzWithReceptionsDTO struct {
-	Pvz        PvzResponseDTO             `json:"pvz"`
-	Receptions []ReceptionWithProductsDTO `json:"receptions"`
+	Pvz        *PvzResponseDTO             `json:"pvz"`
+	Receptions []*ReceptionWithProductsDTO `json:"receptions"`
 }
 
 type PvzResponseDTO struct {

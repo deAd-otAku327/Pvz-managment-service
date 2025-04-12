@@ -11,8 +11,8 @@ type CloseReceptionRequestDTO struct {
 }
 
 type ReceptionWithProductsDTO struct {
-	Reception ReceptionResponseDTO `json:"reception"`
-	Products  []ProductResponseDTO `json:"products"`
+	Reception *ReceptionResponseDTO `json:"reception"`
+	Products  []*ProductResponseDTO `json:"products"`
 }
 
 type ReceptionResponseDTO struct {

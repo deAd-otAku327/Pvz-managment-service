@@ -4,12 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"pvz-service/internal/entities"
 	"pvz-service/internal/models"
 )
 
 type ProductDB interface {
-	AddProduct(ctx context.Context, addProduct *models.AddProduct) (*entities.Product, error)
+	AddProduct(ctx context.Context, addProduct *models.AddProduct) (*models.Product, error)
 	DeleteProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error
 }
 
@@ -23,7 +22,7 @@ func New(db *sql.DB) ProductDB {
 	}
 }
 
-func (s *productStorage) AddProduct(ctx context.Context, addProduct *models.AddProduct) (*entities.Product, error) {
+func (s *productStorage) AddProduct(ctx context.Context, addProduct *models.AddProduct) (*models.Product, error) {
 	return nil, errors.New("testing plug")
 }
 

@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/dto"
-	"pvz-service/internal/entities"
 	dtomap "pvz-service/internal/mappers/dto"
+	modelmap "pvz-service/internal/mappers/model"
 	"pvz-service/internal/storage/db"
 	"pvz-service/pkg/werrors"
 )
 
 type ReceptionService interface {
-	CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*entities.Reception, werrors.Werror)
-	CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*entities.Reception, werrors.Werror)
+	CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror)
+	CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror)
 }
 
 type receptionService struct {
@@ -29,7 +29,7 @@ func New(storage db.DB, logger *slog.Logger) ReceptionService {
 	}
 }
 
-func (s *receptionService) CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*entities.Reception, werrors.Werror) {
+func (s *receptionService) CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror) {
 	createReception := dtomap.MapToCreateReception(request)
 	err := createReception.Validate()
 	if err != nil {
@@ -42,10 +42,10 @@ func (s *receptionService) CreateReception(ctx context.Context, request *dto.Cre
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
-	return reception, nil
+	return modelmap.MapToReceptionResponse(reception), nil
 }
 
-func (s *receptionService) CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*entities.Reception, werrors.Werror) {
+func (s *receptionService) CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror) {
 	closeReception := dtomap.MapToCloseReception(request)
 	err := closeReception.Validate()
 	if err != nil {
@@ -58,5 +58,5 @@ func (s *receptionService) CloseReception(ctx context.Context, request *dto.Clos
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
-	return reception, nil
+	return modelmap.MapToReceptionResponse(reception), nil
 }

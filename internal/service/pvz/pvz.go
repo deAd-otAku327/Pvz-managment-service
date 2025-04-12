@@ -7,7 +7,7 @@ import (
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/dto"
 	dtomap "pvz-service/internal/mappers/dto"
-	entitymap "pvz-service/internal/mappers/entity"
+	modelmap "pvz-service/internal/mappers/model"
 	"pvz-service/internal/storage/db"
 	"pvz-service/pkg/werrors"
 )
@@ -36,13 +36,13 @@ func (s *pvzService) GetPvzList(ctx context.Context, request *dto.PvzFilterParam
 		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	pvzs, receptions, err := s.storage.GetPvzList(ctx, params)
+	pvzList, err := s.storage.GetPvzList(ctx, params)
 	if err != nil {
 		s.logger.Error("get pvz listing: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
-	return entitymap.MapToGetPvzListResponse(pvzs, receptions), nil
+	return modelmap.MapToGetPvzListResponse(pvzList), nil
 }
 
 func (s *pvzService) CreatePvz(ctx context.Context, request *dto.CreatePvzRequestDTO) (*dto.PvzResponseDTO, werrors.Werror) {
@@ -58,5 +58,5 @@ func (s *pvzService) CreatePvz(ctx context.Context, request *dto.CreatePvzReques
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
-	return entitymap.MapToPvzResponse(pvz), nil
+	return modelmap.MapToPvzResponse(pvz), nil
 }

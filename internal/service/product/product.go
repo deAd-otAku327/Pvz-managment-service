@@ -7,7 +7,7 @@ import (
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/dto"
 	dtomap "pvz-service/internal/mappers/dto"
-	entitymap "pvz-service/internal/mappers/entity"
+	modelmap "pvz-service/internal/mappers/model"
 	"pvz-service/internal/storage/db"
 	"pvz-service/pkg/werrors"
 )
@@ -58,5 +58,5 @@ func (s *productService) AddProduct(ctx context.Context, request *dto.AddProduct
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
-	return entitymap.MapToProductResponse(product), nil
+	return modelmap.MapToProductResponse(product), nil
 }

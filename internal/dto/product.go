@@ -12,7 +12,7 @@ type DeleteProductRequestDTO struct {
 }
 
 type ProductResponseDTO struct {
-	ID          *int      `json:"id,omitempty"`
+	ID          int       `json:"id"`
 	DateTime    time.Time `json:"dateTime"`
 	Type        string    `json:"type"`
 	ReceptionID string    `json:"receptionId"`

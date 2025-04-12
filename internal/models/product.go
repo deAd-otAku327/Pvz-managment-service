@@ -3,6 +3,7 @@ package models
 import (
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/enum"
+	"time"
 )
 
 type AddProduct struct {
@@ -12,6 +13,13 @@ type AddProduct struct {
 
 type DeleteProduct struct {
 	PvzID int
+}
+
+type Product struct {
+	ID          int
+	DateTime    time.Time
+	ReceptionID int
+	Type        string
 }
 
 func (ap *AddProduct) Validate() error {
@@ -31,5 +39,9 @@ func (dp *DeleteProduct) Validate() error {
 		return apperrors.ErrInvalidPvzID
 	}
 
+	return nil
+}
+
+func (p *Product) Validate() error {
 	return nil
 }
