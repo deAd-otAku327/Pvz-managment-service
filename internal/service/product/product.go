@@ -58,5 +58,11 @@ func (s *productService) AddProduct(ctx context.Context, request *dto.AddProduct
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
+	err = product.Validate()
+	if err != nil {
+		s.logger.Error("add product response data invalid, DB inconsistency detected: " + err.Error())
+		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
+	}
+
 	return modelmap.MapToProductResponse(product), nil
 }

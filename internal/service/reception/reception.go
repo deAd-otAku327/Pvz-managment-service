@@ -42,6 +42,12 @@ func (s *receptionService) CreateReception(ctx context.Context, request *dto.Cre
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
+	err = reception.Validate()
+	if err != nil {
+		s.logger.Error("create reception response data invalid, DB inconsistency detected: " + err.Error())
+		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
+	}
+
 	return modelmap.MapToReceptionResponse(reception), nil
 }
 
@@ -55,6 +61,12 @@ func (s *receptionService) CloseReception(ctx context.Context, request *dto.Clos
 	reception, err := s.storage.CloseReception(ctx, closeReception)
 	if err != nil {
 		s.logger.Error("close reception: " + err.Error())
+		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
+	}
+
+	err = reception.Validate()
+	if err != nil {
+		s.logger.Error("close reception response data invalid, DB inconsistency detected: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 

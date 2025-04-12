@@ -42,6 +42,12 @@ func (s *pvzService) GetPvzList(ctx context.Context, request *dto.PvzFilterParam
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 
+	err = pvzList.Validate()
+	if err != nil {
+		s.logger.Error("get pvz listing response data invalid, DB inconsistency detected: " + err.Error())
+		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
+	}
+
 	return modelmap.MapToGetPvzListResponse(pvzList), nil
 }
 
@@ -55,6 +61,12 @@ func (s *pvzService) CreatePvz(ctx context.Context, request *dto.CreatePvzReques
 	pvz, err := s.storage.CreatePvz(ctx, pvzCreate)
 	if err != nil {
 		s.logger.Error("create pvz: " + err.Error())
+		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
+	}
+
+	err = pvz.Validate()
+	if err != nil {
+		s.logger.Error("create pvz response data invalid, DB inconsistency detected: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 

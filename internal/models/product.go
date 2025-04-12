@@ -43,5 +43,13 @@ func (dp *DeleteProduct) Validate() error {
 }
 
 func (p *Product) Validate() error {
+	if !enum.CheckProductType(p.Type) {
+		return apperrors.ErrInvalidProductType
+	}
+
+	if p.ReceptionID <= 0 {
+		return apperrors.ErrInvalidReceptionID
+	}
+
 	return nil
 }

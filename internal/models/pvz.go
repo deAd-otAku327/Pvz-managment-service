@@ -86,5 +86,13 @@ func (pwr *PvzWithReceptions) Validate() error {
 }
 
 func (p *Pvz) Validate() error {
+	if !enum.CheckCity(p.City) {
+		return apperrors.ErrInvalidCity
+	}
+
+	if p.ID <= 0 {
+		return apperrors.ErrInvalidPvzID
+	}
+
 	return nil
 }

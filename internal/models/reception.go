@@ -2,6 +2,7 @@ package models
 
 import (
 	"pvz-service/internal/apperrors"
+	"pvz-service/internal/enum"
 	"time"
 )
 
@@ -42,6 +43,18 @@ func (cr *CloseReception) Validate() error {
 }
 
 func (r *Reception) Validate() error {
+	if !enum.CheckStatus(r.Status) {
+		return apperrors.ErrInvalidReceptionStatus
+	}
+
+	if r.ID <= 0 {
+		return apperrors.ErrInvalidReceptionID
+	}
+
+	if r.PvzID <= 0 {
+		return apperrors.ErrInvalidPvzID
+	}
+
 	return nil
 }
 
