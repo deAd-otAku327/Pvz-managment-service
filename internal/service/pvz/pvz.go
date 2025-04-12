@@ -64,7 +64,7 @@ func (s *pvzService) CreatePvz(ctx context.Context, createPvz *models.CreatePvz)
 
 	err = pvz.Validate()
 	if err != nil {
-		s.logger.Error("create pvz response data invalid, DB inconsistency detected: " + err.Error())
+		s.logger.Error("create pvz: response data invalid, DB inconsistency detected: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 

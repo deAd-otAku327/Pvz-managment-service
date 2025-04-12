@@ -9,6 +9,7 @@ import (
 	modelmap "pvz-service/internal/mappers/model"
 	"pvz-service/internal/models"
 	"pvz-service/internal/storage/db"
+	"pvz-service/internal/storage/db/dberrors"
 	"pvz-service/pkg/werrors"
 )
 
@@ -37,6 +38,9 @@ func (s *receptionService) CreateReception(ctx context.Context, createReception 
 
 	reception, err := s.storage.CreateReception(ctx, createReception)
 	if err != nil {
+		if err == dberrors.ErrForeignKeyViolation {
+			return nil, werrors.New(apperrors.ErrInvalidPvzID, http.StatusBadRequest)
+		}
 		s.logger.Error("create reception: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
@@ -64,7 +68,7 @@ func (s *receptionService) CloseReception(ctx context.Context, closeReception *m
 
 	err = reception.Validate()
 	if err != nil {
-		s.logger.Error("close reception response data invalid, DB inconsistency detected: " + err.Error())
+		s.logger.Error("close reception: response data invalid, DB inconsistency detected: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
 

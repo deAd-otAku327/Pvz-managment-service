@@ -17,8 +17,26 @@ func MapToPvz(pvz *entities.Pvz) *models.Pvz {
 	}
 }
 
-func MapToReception(reception *entities.Reception) *models.Reception {
-	return &models.Reception{}
+func MapToReception(reception *entities.Reception, prods []*entities.Product) *models.Reception {
+	return &models.Reception{
+		ID:       reception.ID,
+		DateTime: reception.DateTime,
+		PvzID:    reception.PvzID,
+		Products: func() []*models.Product {
+			if prods != nil {
+				products := make([]*models.Product, 0)
+				for _, p := range prods {
+					products = append(products, MapToProduct(p))
+				}
+				if len(products) > 0 {
+					return products
+				}
+			}
+
+			return nil
+		}(),
+		Status: reception.Status,
+	}
 }
 
 func MapToProduct(product *entities.Product) *models.Product {

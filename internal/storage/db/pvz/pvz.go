@@ -8,9 +8,11 @@ import (
 	"pvz-service/internal/entities"
 	entitymap "pvz-service/internal/mappers/entity"
 	"pvz-service/internal/models"
+	"pvz-service/internal/storage/db/dberrors"
 	"pvz-service/internal/storage/db/shared/consts"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/lib/pq"
 )
 
 type PvzDB interface {
@@ -42,6 +44,11 @@ func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz)
 	row := s.db.QueryRowContext(ctx, insertQuery, args...)
 	err = row.Scan(&pvz.ID, &pvz.RegistrationDate, &pvz.City)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code.Name() == consts.PQInvalidTextRepresentation {
+				return nil, errors.Join(dberrors.ErrEnumTypeViolation, err)
+			}
+		}
 		return nil, err
 	}
 

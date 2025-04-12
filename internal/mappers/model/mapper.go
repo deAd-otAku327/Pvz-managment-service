@@ -5,10 +5,12 @@ import (
 	"pvz-service/internal/models"
 )
 
+const DateTimeFormat = "2006-01-02 15:04:05"
+
 func MapToPvzResponse(pvz *models.Pvz) *dto.PvzResponseDTO {
 	return &dto.PvzResponseDTO{
 		ID:               pvz.ID,
-		RegistrationDate: pvz.RegistrationDate.Format("2006-01-02 15:04:05"),
+		RegistrationDate: pvz.RegistrationDate.Format(DateTimeFormat),
 		City:             pvz.City,
 	}
 }
@@ -18,7 +20,12 @@ func MapToGetPvzListResponse(pvzList *models.PvzList) *dto.GetPvzListResponseDTO
 }
 
 func MapToReceptionResponse(reception *models.Reception) *dto.ReceptionResponseDTO {
-	return &dto.ReceptionResponseDTO{}
+	return &dto.ReceptionResponseDTO{
+		ID:       reception.ID,
+		DateTime: reception.DateTime.Format(DateTimeFormat),
+		PvzID:    reception.PvzID,
+		Status:   reception.Status,
+	}
 }
 
 func MapToProductResponse(product *models.Product) *dto.ProductResponseDTO {

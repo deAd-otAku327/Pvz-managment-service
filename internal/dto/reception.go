@@ -1,7 +1,5 @@
 package dto
 
-import "time"
-
 type CreateReceptionRequestDTO struct {
 	PvzID int `json:"pvzId"`
 }
@@ -16,8 +14,8 @@ type ReceptionWithProductsDTO struct {
 }
 
 type ReceptionResponseDTO struct {
-	ID       int       `json:"id"`
-	DateTime time.Time `json:"dateTime"`
-	PvzID    int       `json:"pvzId"`
-	Status   string    `json:"status"`
+	ID       int    `json:"id"`
+	DateTime string `json:"dateTime"`
+	PvzID    int    `json:"pvzId"`
+	Status   string `json:"status"`
 }
