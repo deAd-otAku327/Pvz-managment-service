@@ -13,7 +13,7 @@ const (
 	maxPvzFilterLimit = 30
 )
 
-type PvzCreate struct {
+type CreatePvz struct {
 	City string
 }
 
@@ -28,7 +28,7 @@ type PvzList []*PvzWithReceptions
 
 type PvzWithReceptions struct {
 	Pvz        *Pvz
-	Receptions []*ReceptionWithProducts
+	Receptions []*Reception
 }
 
 type Pvz struct {
@@ -37,7 +37,7 @@ type Pvz struct {
 	City             string
 }
 
-func (pc *PvzCreate) Validate() error {
+func (pc *CreatePvz) Validate() error {
 	if !enum.CheckCity(pc.City) {
 		return apperrors.ErrInvalidCity
 	}

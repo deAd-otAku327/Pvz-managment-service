@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/dto"
-	dtomap "pvz-service/internal/mappers/dto"
 	modelmap "pvz-service/internal/mappers/model"
+	"pvz-service/internal/models"
 	"pvz-service/internal/storage/db"
 	"pvz-service/pkg/werrors"
 )
 
 type PvzService interface {
-	CreatePvz(ctx context.Context, request *dto.CreatePvzRequestDTO) (*dto.PvzResponseDTO, werrors.Werror)
-	GetPvzList(ctx context.Context, request *dto.PvzFilterParamsDTO) (*dto.GetPvzListResponseDTO, werrors.Werror)
+	CreatePvz(ctx context.Context, createPvz *models.CreatePvz) (*dto.PvzResponseDTO, werrors.Werror)
+	GetPvzList(ctx context.Context, pvzFilterParams *models.PvzFilterParams) (*dto.GetPvzListResponseDTO, werrors.Werror)
 }
 
 type pvzService struct {
@@ -29,14 +29,13 @@ func New(storage db.DB, logger *slog.Logger) PvzService {
 	}
 }
 
-func (s *pvzService) GetPvzList(ctx context.Context, request *dto.PvzFilterParamsDTO) (*dto.GetPvzListResponseDTO, werrors.Werror) {
-	params := dtomap.MapToPvzFilterParams(request)
-	err := params.Validate()
+func (s *pvzService) GetPvzList(ctx context.Context, pvzFilterParams *models.PvzFilterParams) (*dto.GetPvzListResponseDTO, werrors.Werror) {
+	err := pvzFilterParams.Validate()
 	if err != nil {
 		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	pvzList, err := s.storage.GetPvzList(ctx, params)
+	pvzList, err := s.storage.GetPvzList(ctx, pvzFilterParams)
 	if err != nil {
 		s.logger.Error("get pvz listing: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
@@ -51,14 +50,13 @@ func (s *pvzService) GetPvzList(ctx context.Context, request *dto.PvzFilterParam
 	return modelmap.MapToGetPvzListResponse(pvzList), nil
 }
 
-func (s *pvzService) CreatePvz(ctx context.Context, request *dto.CreatePvzRequestDTO) (*dto.PvzResponseDTO, werrors.Werror) {
-	pvzCreate := dtomap.MapToPvzCreate(request)
-	err := pvzCreate.Validate()
+func (s *pvzService) CreatePvz(ctx context.Context, createPvz *models.CreatePvz) (*dto.PvzResponseDTO, werrors.Werror) {
+	err := createPvz.Validate()
 	if err != nil {
 		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	pvz, err := s.storage.CreatePvz(ctx, pvzCreate)
+	pvz, err := s.storage.CreatePvz(ctx, createPvz)
 	if err != nil {
 		s.logger.Error("create pvz: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)

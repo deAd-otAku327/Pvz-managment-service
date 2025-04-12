@@ -14,8 +14,8 @@ func MapToPvzFilterParams(fp *dto.PvzFilterParamsDTO) *models.PvzFilterParams {
 	}
 }
 
-func MapToPvzCreate(cpr *dto.CreatePvzRequestDTO) *models.PvzCreate {
-	return &models.PvzCreate{
+func MapToPvzCreate(cpr *dto.CreatePvzRequestDTO) *models.CreatePvz {
+	return &models.CreatePvz{
 		City: cpr.City,
 	}
 }

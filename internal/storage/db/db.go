@@ -44,7 +44,7 @@ func New(cfg config.DBConn) (DB, error) {
 	}, nil
 }
 
-func (s *storage) CreatePvz(ctx context.Context, pvzCreate *models.PvzCreate) (*models.Pvz, error) {
+func (s *storage) CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz) (*models.Pvz, error) {
 	return s.pvzStorage.CreatePvz(ctx, pvzCreate)
 }
 

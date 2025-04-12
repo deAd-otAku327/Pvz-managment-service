@@ -6,6 +6,7 @@ import (
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/controller/shared/consts"
 	"pvz-service/internal/dto"
+	dtomap "pvz-service/internal/mappers/dto"
 	"pvz-service/internal/service"
 	"pvz-service/pkg/response"
 	"strconv"
@@ -37,7 +38,7 @@ func (c *productController) AddProduct() http.HandlerFunc {
 			return
 		}
 
-		product, serviceErr := c.service.AddProduct(r.Context(), &request)
+		product, serviceErr := c.service.AddProduct(r.Context(), dtomap.MapToAddProduct(&request))
 		if serviceErr != nil {
 			response.MakeErrorResponseJSON(w, serviceErr.Code(), serviceErr)
 			return
@@ -55,7 +56,7 @@ func (c *productController) DeleteProduct() http.HandlerFunc {
 			PvzID: p,
 		}
 
-		serviceErr := c.service.DeleteProduct(r.Context(), &request)
+		serviceErr := c.service.DeleteProduct(r.Context(), dtomap.MapToDeleteProduct(&request))
 		if serviceErr != nil {
 			response.MakeErrorResponseJSON(w, serviceErr.Code(), serviceErr)
 			return

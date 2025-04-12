@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/dto"
+	dtomap "pvz-service/internal/mappers/dto"
 	"pvz-service/internal/service"
 	"pvz-service/pkg/response"
 
@@ -35,7 +36,7 @@ func (c *pvzController) CreatePvz() http.HandlerFunc {
 			return
 		}
 
-		pvz, serviceErr := c.service.CreatePvz(r.Context(), &request)
+		pvz, serviceErr := c.service.CreatePvz(r.Context(), dtomap.MapToPvzCreate(&request))
 		if serviceErr != nil {
 			response.MakeErrorResponseJSON(w, serviceErr.Code(), serviceErr)
 			return
@@ -60,7 +61,7 @@ func (c *pvzController) GetPvzList() http.HandlerFunc {
 			return
 		}
 
-		summaryInfo, serviceErr := c.service.GetPvzList(r.Context(), &request)
+		summaryInfo, serviceErr := c.service.GetPvzList(r.Context(), dtomap.MapToPvzFilterParams(&request))
 		if serviceErr != nil {
 			response.MakeErrorResponseJSON(w, serviceErr.Code(), serviceErr)
 			return

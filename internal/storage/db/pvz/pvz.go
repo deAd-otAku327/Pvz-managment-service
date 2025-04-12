@@ -8,7 +8,7 @@ import (
 )
 
 type PvzDB interface {
-	CreatePvz(ctx context.Context, pvzCreate *models.PvzCreate) (*models.Pvz, error)
+	CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz) (*models.Pvz, error)
 	GetPvzList(ctx context.Context, filters *models.PvzFilterParams) (*models.PvzList, error)
 }
 
@@ -22,7 +22,7 @@ func New(db *sql.DB) PvzDB {
 	}
 }
 
-func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *models.PvzCreate) (*models.Pvz, error) {
+func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz) (*models.Pvz, error) {
 	return nil, errors.New("testing plug")
 }
 

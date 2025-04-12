@@ -18,12 +18,8 @@ type Reception struct {
 	ID       int
 	DateTime time.Time
 	PvzID    int
+	Products []*Product
 	Status   string
-}
-
-type ReceptionWithProducts struct {
-	Reception *Reception
-	Products  []*Product
 }
 
 func (cr *CreateReception) Validate() error {
@@ -55,20 +51,11 @@ func (r *Reception) Validate() error {
 		return apperrors.ErrInvalidPvzID
 	}
 
-	return nil
-}
-
-func (rwp *ReceptionWithProducts) Validate() error {
-	return func() error {
-		if err := rwp.Reception.Validate(); err != nil {
+	for _, r := range r.Products {
+		if err := r.Validate(); err != nil {
 			return err
 		}
+	}
 
-		for _, r := range rwp.Products {
-			if err := r.Validate(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}()
+	return nil
 }

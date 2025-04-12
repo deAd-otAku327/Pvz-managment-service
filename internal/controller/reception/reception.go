@@ -6,6 +6,7 @@ import (
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/controller/shared/consts"
 	"pvz-service/internal/dto"
+	dtomap "pvz-service/internal/mappers/dto"
 	"pvz-service/internal/service"
 	"pvz-service/pkg/response"
 	"strconv"
@@ -37,7 +38,7 @@ func (c *receptionController) CreateReception() http.HandlerFunc {
 			return
 		}
 
-		reception, serviceErr := c.service.CreateReception(r.Context(), &request)
+		reception, serviceErr := c.service.CreateReception(r.Context(), dtomap.MapToCreateReception(&request))
 		if serviceErr != nil {
 			response.MakeErrorResponseJSON(w, serviceErr.Code(), serviceErr)
 			return
@@ -55,7 +56,7 @@ func (c *receptionController) CloseReception() http.HandlerFunc {
 			PvzID: p,
 		}
 
-		reception, serviceErr := c.service.CloseReception(r.Context(), &request)
+		reception, serviceErr := c.service.CloseReception(r.Context(), dtomap.MapToCloseReception(&request))
 		if serviceErr != nil {
 			response.MakeErrorResponseJSON(w, serviceErr.Code(), serviceErr)
 			return

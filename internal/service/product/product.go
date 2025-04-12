@@ -6,15 +6,16 @@ import (
 	"net/http"
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/dto"
-	dtomap "pvz-service/internal/mappers/dto"
+
 	modelmap "pvz-service/internal/mappers/model"
+	"pvz-service/internal/models"
 	"pvz-service/internal/storage/db"
 	"pvz-service/pkg/werrors"
 )
 
 type ProductService interface {
-	AddProduct(ctx context.Context, request *dto.AddProductRequestDTO) (*dto.ProductResponseDTO, werrors.Werror)
-	DeleteProduct(ctx context.Context, request *dto.DeleteProductRequestDTO) werrors.Werror
+	AddProduct(ctx context.Context, request *models.AddProduct) (*dto.ProductResponseDTO, werrors.Werror)
+	DeleteProduct(ctx context.Context, request *models.DeleteProduct) werrors.Werror
 }
 
 type productService struct {
@@ -29,8 +30,7 @@ func New(storage db.DB, logger *slog.Logger) ProductService {
 	}
 }
 
-func (s *productService) DeleteProduct(ctx context.Context, request *dto.DeleteProductRequestDTO) werrors.Werror {
-	deleteProduct := dtomap.MapToDeleteProduct(request)
+func (s *productService) DeleteProduct(ctx context.Context, deleteProduct *models.DeleteProduct) werrors.Werror {
 	err := deleteProduct.Validate()
 	if err != nil {
 		return werrors.New(err, http.StatusBadRequest)
@@ -45,8 +45,7 @@ func (s *productService) DeleteProduct(ctx context.Context, request *dto.DeleteP
 	return nil
 }
 
-func (s *productService) AddProduct(ctx context.Context, request *dto.AddProductRequestDTO) (*dto.ProductResponseDTO, werrors.Werror) {
-	addProduct := dtomap.MapToAddProduct(request)
+func (s *productService) AddProduct(ctx context.Context, addProduct *models.AddProduct) (*dto.ProductResponseDTO, werrors.Werror) {
 	err := addProduct.Validate()
 	if err != nil {
 		return nil, werrors.New(err, http.StatusBadRequest)

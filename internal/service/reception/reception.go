@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/dto"
-	dtomap "pvz-service/internal/mappers/dto"
 	modelmap "pvz-service/internal/mappers/model"
+	"pvz-service/internal/models"
 	"pvz-service/internal/storage/db"
 	"pvz-service/pkg/werrors"
 )
 
 type ReceptionService interface {
-	CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror)
-	CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror)
+	CreateReception(ctx context.Context, createReception *models.CreateReception) (*dto.ReceptionResponseDTO, werrors.Werror)
+	CloseReception(ctx context.Context, closeReception *models.CloseReception) (*dto.ReceptionResponseDTO, werrors.Werror)
 }
 
 type receptionService struct {
@@ -29,8 +29,7 @@ func New(storage db.DB, logger *slog.Logger) ReceptionService {
 	}
 }
 
-func (s *receptionService) CreateReception(ctx context.Context, request *dto.CreateReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror) {
-	createReception := dtomap.MapToCreateReception(request)
+func (s *receptionService) CreateReception(ctx context.Context, createReception *models.CreateReception) (*dto.ReceptionResponseDTO, werrors.Werror) {
 	err := createReception.Validate()
 	if err != nil {
 		return nil, werrors.New(err, http.StatusBadRequest)
@@ -51,8 +50,7 @@ func (s *receptionService) CreateReception(ctx context.Context, request *dto.Cre
 	return modelmap.MapToReceptionResponse(reception), nil
 }
 
-func (s *receptionService) CloseReception(ctx context.Context, request *dto.CloseReceptionRequestDTO) (*dto.ReceptionResponseDTO, werrors.Werror) {
-	closeReception := dtomap.MapToCloseReception(request)
+func (s *receptionService) CloseReception(ctx context.Context, closeReception *models.CloseReception) (*dto.ReceptionResponseDTO, werrors.Werror) {
 	err := closeReception.Validate()
 	if err != nil {
 		return nil, werrors.New(err, http.StatusBadRequest)
