@@ -5,10 +5,10 @@ import (
 	"log/slog"
 	"net/http"
 	"pvz-service/internal/apperrors"
-	"pvz-service/internal/db"
 	"pvz-service/internal/dto"
 	dtomap "pvz-service/internal/mappers/dto"
 	entitymap "pvz-service/internal/mappers/entity"
+	"pvz-service/internal/storage/db"
 	"pvz-service/pkg/werrors"
 )
 

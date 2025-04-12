@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"pvz-service/internal/config"
 	"pvz-service/internal/controller"
-	"pvz-service/internal/db"
 	"pvz-service/internal/enum"
 	"pvz-service/internal/middleware"
 	"pvz-service/internal/service"
+	"pvz-service/internal/storage/db"
 	"pvz-service/internal/tokenizer"
 	"pvz-service/pkg/cryptor"
 
