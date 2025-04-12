@@ -6,7 +6,11 @@ import (
 )
 
 func MapToPvzResponse(pvz *models.Pvz) *dto.PvzResponseDTO {
-	return &dto.PvzResponseDTO{}
+	return &dto.PvzResponseDTO{
+		ID:               pvz.ID,
+		RegistrationDate: pvz.RegistrationDate.Format("2006-01-02 15:04:05"),
+		City:             pvz.City,
+	}
 }
 
 func MapToGetPvzListResponse(pvzList *models.PvzList) *dto.GetPvzListResponseDTO {

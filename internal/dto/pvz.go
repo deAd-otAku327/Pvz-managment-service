@@ -16,9 +16,9 @@ type PvzWithReceptionsDTO struct {
 }
 
 type PvzResponseDTO struct {
-	ID               int       `json:"id"`
-	RegistrationDate time.Time `json:"registrationDate"`
-	City             string    `json:"city"`
+	ID               int    `json:"id"`
+	RegistrationDate string `json:"registrationDate"`
+	City             string `json:"city"`
 }
 
 // Page value = 0 will be recognized as default value = 1.

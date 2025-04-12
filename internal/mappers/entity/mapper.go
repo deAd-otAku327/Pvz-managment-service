@@ -5,12 +5,16 @@ import (
 	"pvz-service/internal/models"
 )
 
-func MapToPvzList(pvzs []entities.Pvz, recepts []entities.Reception, products []entities.Product) *models.PvzList {
+func MapToPvzList(pvzs []*entities.Pvz, recepts []*entities.Reception, products []*entities.Product) *models.PvzList {
 	return &models.PvzList{}
 }
 
-func MapToPvz(pvz entities.Pvz) *models.Pvz {
-	return &models.Pvz{}
+func MapToPvz(pvz *entities.Pvz) *models.Pvz {
+	return &models.Pvz{
+		ID:               pvz.ID,
+		RegistrationDate: pvz.RegistrationDate,
+		City:             pvz.City,
+	}
 }
 
 func MapToReception(reception *entities.Reception) *models.Reception {

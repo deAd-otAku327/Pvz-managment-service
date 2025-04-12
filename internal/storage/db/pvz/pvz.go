@@ -4,7 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
+	"pvz-service/internal/entities"
+	entitymap "pvz-service/internal/mappers/entity"
 	"pvz-service/internal/models"
+	"pvz-service/internal/storage/db/shared/consts"
+
+	sq "github.com/Masterminds/squirrel"
 )
 
 type PvzDB interface {
@@ -23,7 +29,23 @@ func New(db *sql.DB) PvzDB {
 }
 
 func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz) (*models.Pvz, error) {
-	return nil, errors.New("testing plug")
+	insertQuery, args, err := sq.Insert(consts.PvzsTable).
+		Columns(consts.City).
+		Values(pvzCreate.City).
+		Suffix(fmt.Sprintf("RETURNING %s,%s,%s", consts.ID, consts.RegistrationDate, consts.City)).
+		PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var pvz entities.Pvz
+	row := s.db.QueryRowContext(ctx, insertQuery, args...)
+	err = row.Scan(&pvz.ID, &pvz.RegistrationDate, &pvz.City)
+	if err != nil {
+		return nil, err
+	}
+
+	return entitymap.MapToPvz(&pvz), nil
 }
 
 func (s *pvzStorage) GetPvzList(ctx context.Context, filters *models.PvzFilterParams) (*models.PvzList, error) {
