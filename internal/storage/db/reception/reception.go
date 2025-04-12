@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"pvz-service/internal/entities"
 	"pvz-service/internal/enum"
 	"pvz-service/internal/models"
@@ -44,7 +43,7 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 	insertQuery, insArgs, err := sq.Insert(consts.ReceptionsTable).
 		Columns(consts.PvzID).
 		Values(createReception.PvzID).
-		Suffix(fmt.Sprintf("RETURNING %s,%s,%s,%s", consts.ID, consts.DateTime, consts.PvzID, consts.Status)).
+		Suffix("RETURNING *").
 		PlaceholderFormat(sq.Dollar).ToSql()
 	if err != nil {
 		return nil, err

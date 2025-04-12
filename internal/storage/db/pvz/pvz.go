@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"pvz-service/internal/entities"
 	entitymap "pvz-service/internal/mappers/entity"
 	"pvz-service/internal/models"
@@ -34,7 +33,7 @@ func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz)
 	insertQuery, args, err := sq.Insert(consts.PvzsTable).
 		Columns(consts.City).
 		Values(pvzCreate.City).
-		Suffix(fmt.Sprintf("RETURNING %s,%s,%s", consts.ID, consts.RegistrationDate, consts.City)).
+		Suffix("RETURNING *").
 		PlaceholderFormat(sq.Dollar).ToSql()
 	if err != nil {
 		return nil, err
