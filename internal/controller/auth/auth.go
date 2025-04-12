@@ -1,4 +1,4 @@
-package controller
+package auth
 
 import (
 	"encoding/json"
@@ -6,10 +6,28 @@ import (
 	"net/http"
 	"pvz-service/internal/apperrors"
 	"pvz-service/internal/middleware"
+	"pvz-service/internal/service"
 	"pvz-service/pkg/response"
 )
 
-func (c *controller) DummyLogin() http.HandlerFunc {
+type AuthController interface {
+	DummyLogin() http.HandlerFunc
+	Register() http.HandlerFunc
+	Login() http.HandlerFunc
+}
+
+type authController struct {
+	service service.Service
+}
+
+func New(service service.Service) AuthController {
+	return &authController{
+		service: service,
+	}
+}
+
+// No DTO for dummy.
+func (c *authController) DummyLogin() http.HandlerFunc {
 	type dummyLoginRequest struct {
 		Role string `json:"role"`
 	}
@@ -30,5 +48,17 @@ func (c *controller) DummyLogin() http.HandlerFunc {
 		w.Header().Set("Set-Cookie", fmt.Sprintf("%s=%s", middleware.CookieName, *token))
 
 		response.MakeResponseJSON(w, http.StatusOK, nil)
+	}
+}
+
+func (c *authController) Register() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
+func (c *authController) Login() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
 	}
 }

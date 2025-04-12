@@ -61,8 +61,8 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 
 	empRouter.HandleFunc("/receptions", controller.CreateReception()).Methods(http.MethodPost)
 	empRouter.HandleFunc("/products", controller.AddProduct()).Methods(http.MethodPost)
-	empRouter.HandleFunc("/pvz/{pvzId:[1-9][0-9]*}/close_last_reception", controller.CloseLastReception()).Methods(http.MethodPost)
-	empRouter.HandleFunc("/pvz/{pvzId:[1-9][0-9]*}/delete_last_product", controller.DeleteLastProduct()).Methods(http.MethodPost)
+	empRouter.HandleFunc("/pvz/{pvzId:[1-9][0-9]*}/close_last_reception", controller.CloseReception()).Methods(http.MethodPost)
+	empRouter.HandleFunc("/pvz/{pvzId:[1-9][0-9]*}/delete_last_product", controller.DeleteProduct()).Methods(http.MethodPost)
 
 	modAndEmpRouter := router.PathPrefix("").Subrouter()
 	modAndEmpRouter.Use(middleware.AuthOnRoles(tokenizer, map[string]struct{}{
