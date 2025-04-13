@@ -18,8 +18,8 @@ import (
 )
 
 type ReceptionDB interface {
-	CreateReception(ctx context.Context, createreception *models.CreateReception) (*models.Reception, error)
-	CloseReception(ctx context.Context, closeReception *models.CloseReception) (*models.Reception, error)
+	CreateReception(ctx context.Context, createreception *entities.CreateReception) (*models.Reception, error)
+	CloseReception(ctx context.Context, closeReception *entities.CloseReception) (*models.Reception, error)
 }
 
 type receptionStorage struct {
@@ -34,7 +34,7 @@ func New(db *sql.DB, logger *slog.Logger) ReceptionDB {
 	}
 }
 
-func (s *receptionStorage) CreateReception(ctx context.Context, createReception *models.CreateReception) (*models.Reception, error) {
+func (s *receptionStorage) CreateReception(ctx context.Context, createReception *entities.CreateReception) (*models.Reception, error) {
 	selectQuery, selArgs, err := sq.Select(consts.ID).
 		From(consts.ReceptionsTable).
 		Where(sq.Eq{
@@ -100,7 +100,7 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 	return entitymap.MapToReception(&reception, nil), nil
 }
 
-func (s *receptionStorage) CloseReception(ctx context.Context, closeReception *models.CloseReception) (*models.Reception, error) {
+func (s *receptionStorage) CloseReception(ctx context.Context, closeReception *entities.CloseReception) (*models.Reception, error) {
 	query, args, err := sq.Update(consts.ReceptionsTable).
 		Set(consts.ReceptionStatus, enum.StatusClose.String()).
 		Where(sq.Eq{

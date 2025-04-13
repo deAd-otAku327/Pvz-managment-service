@@ -18,8 +18,8 @@ import (
 )
 
 type PvzDB interface {
-	CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz) (*models.Pvz, error)
-	GetPvzList(ctx context.Context, filters *models.PvzFilterParams) (models.PvzList, error)
+	CreatePvz(ctx context.Context, pvzCreate *entities.CreatePvz) (*models.Pvz, error)
+	GetPvzList(ctx context.Context, filters *entities.PvzFilterParams) (models.PvzList, error)
 }
 
 type pvzStorage struct {
@@ -34,7 +34,7 @@ func New(db *sql.DB, logger *slog.Logger) PvzDB {
 	}
 }
 
-func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz) (*models.Pvz, error) {
+func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *entities.CreatePvz) (*models.Pvz, error) {
 	insertQuery, args, err := sq.Insert(consts.PvzsTable).
 		Columns(consts.PvzCity).
 		Values(pvzCreate.City).
@@ -59,8 +59,7 @@ func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz)
 	return entitymap.MapToPvz(&pvz), nil
 }
 
-func (s *pvzStorage) GetPvzList(ctx context.Context, filters *models.PvzFilterParams) (models.PvzList, error) {
-
+func (s *pvzStorage) GetPvzList(ctx context.Context, filters *entities.PvzFilterParams) (models.PvzList, error) {
 	pvzs, err := s.getPvzsWithPagination(ctx, filters.Page, filters.Limit)
 	if err != nil {
 		return nil, err

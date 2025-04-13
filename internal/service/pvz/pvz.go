@@ -35,7 +35,7 @@ func (s *pvzService) GetPvzList(ctx context.Context, pvzFilterParams *models.Pvz
 		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	pvzList, err := s.storage.GetPvzList(ctx, pvzFilterParams)
+	pvzList, err := s.storage.GetPvzList(ctx, modelmap.MapToPvzFilterParams(pvzFilterParams))
 	if err != nil {
 		s.logger.Error("get pvz listing: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
@@ -56,7 +56,7 @@ func (s *pvzService) CreatePvz(ctx context.Context, createPvz *models.CreatePvz)
 		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	pvz, err := s.storage.CreatePvz(ctx, createPvz)
+	pvz, err := s.storage.CreatePvz(ctx, modelmap.MapToCreatePvz(createPvz))
 	if err != nil {
 		s.logger.Error("create pvz: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)

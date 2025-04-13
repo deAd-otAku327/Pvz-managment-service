@@ -2,6 +2,7 @@ package model
 
 import (
 	"pvz-service/internal/dto"
+	"pvz-service/internal/entities"
 	"pvz-service/internal/models"
 )
 
@@ -51,5 +52,44 @@ func MapToProductResponse(product *models.Product) *dto.ProductResponseDTO {
 		DateTime:    product.DateTime.Format(DateTimeFormat),
 		ReceptionID: product.ReceptionID,
 		Type:        product.Type,
+	}
+}
+
+func MapToAddProduct(addProduct *models.AddProduct) *entities.AddProduct {
+	return &entities.AddProduct{
+		Type:  addProduct.Type,
+		PvzID: addProduct.PvzID,
+	}
+}
+
+func MapToDeleteProduct(deleteProduct *models.DeleteProduct) *entities.DeleteProduct {
+	return &entities.DeleteProduct{
+		PvzID: deleteProduct.PvzID,
+	}
+}
+
+func MapToCreatePvz(createPvz *models.CreatePvz) *entities.CreatePvz {
+	return &entities.CreatePvz{
+		City: createPvz.City,
+	}
+}
+
+func MapToPvzFilterParams(filters *models.PvzFilterParams) *entities.PvzFilterParams {
+	return &entities.PvzFilterParams{
+		StartDate: filters.StartDate,
+		EndDate:   filters.EndDate,
+		Page:      filters.Page,
+		Limit:     filters.Limit,
+	}
+}
+func MapToCreateReception(createReception *models.CreateReception) *entities.CreateReception {
+	return &entities.CreateReception{
+		PvzID: createReception.PvzID,
+	}
+}
+
+func MapToCloseReception(closeReception *models.CloseReception) *entities.CloseReception {
+	return &entities.CloseReception{
+		PvzID: closeReception.PvzID,
 	}
 }

@@ -37,7 +37,7 @@ func (s *productService) DeleteProduct(ctx context.Context, deleteProduct *model
 		return werrors.New(err, http.StatusBadRequest)
 	}
 
-	err = s.storage.DeleteLastProduct(ctx, deleteProduct)
+	err = s.storage.DeleteLastProduct(ctx, modelmap.MapToDeleteProduct(deleteProduct))
 	if err != nil {
 		if err == dberrors.ErrNothingToDelete {
 			return werrors.New(apperrors.ErrNoProductsInCurrReception, http.StatusBadRequest)
@@ -58,7 +58,7 @@ func (s *productService) AddProduct(ctx context.Context, addProduct *models.AddP
 		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	product, err := s.storage.AddProduct(ctx, addProduct)
+	product, err := s.storage.AddProduct(ctx, modelmap.MapToAddProduct(addProduct))
 	if err != nil {
 		if err == dberrors.ErrInsertImpossible {
 			return nil, werrors.New(apperrors.ErrReceptionIsNotOpened, http.StatusBadRequest)

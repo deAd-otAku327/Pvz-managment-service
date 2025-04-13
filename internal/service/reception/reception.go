@@ -36,7 +36,7 @@ func (s *receptionService) CreateReception(ctx context.Context, createReception 
 		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	reception, err := s.storage.CreateReception(ctx, createReception)
+	reception, err := s.storage.CreateReception(ctx, modelmap.MapToCreateReception(createReception))
 	if err != nil {
 		if err == dberrors.ErrForeignKeyViolation {
 			return nil, werrors.New(apperrors.ErrInvalidPvzID, http.StatusBadRequest)
@@ -63,7 +63,7 @@ func (s *receptionService) CloseReception(ctx context.Context, closeReception *m
 		return nil, werrors.New(err, http.StatusBadRequest)
 	}
 
-	reception, err := s.storage.CloseReception(ctx, closeReception)
+	reception, err := s.storage.CloseReception(ctx, modelmap.MapToCloseReception(closeReception))
 	if err != nil {
 		if err == dberrors.ErrUpdateImpossible {
 			return nil, werrors.New(apperrors.ErrReceptionIsNotOpened, http.StatusBadRequest)

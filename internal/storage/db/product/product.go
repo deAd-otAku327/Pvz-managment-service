@@ -19,8 +19,8 @@ import (
 )
 
 type ProductDB interface {
-	AddProduct(ctx context.Context, addProduct *models.AddProduct) (*models.Product, error)
-	DeleteLastProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error
+	AddProduct(ctx context.Context, addProduct *entities.AddProduct) (*models.Product, error)
+	DeleteLastProduct(ctx context.Context, deleteProduct *entities.DeleteProduct) error
 }
 
 type productStorage struct {
@@ -35,7 +35,7 @@ func New(db *sql.DB, logger *slog.Logger) ProductDB {
 	}
 }
 
-func (s *productStorage) AddProduct(ctx context.Context, addProduct *models.AddProduct) (*models.Product, error) {
+func (s *productStorage) AddProduct(ctx context.Context, addProduct *entities.AddProduct) (*models.Product, error) {
 	selectQuery, selArgs, err := sq.Select(consts.ID).
 		From(consts.ReceptionsTable).
 		Where(sq.Eq{
@@ -98,7 +98,7 @@ func (s *productStorage) AddProduct(ctx context.Context, addProduct *models.AddP
 	return entitymap.MapToProduct(&product), nil
 }
 
-func (s *productStorage) DeleteLastProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error {
+func (s *productStorage) DeleteLastProduct(ctx context.Context, deleteProduct *entities.DeleteProduct) error {
 	selectQuery, selArgs, err := sq.Select(consts.ID).
 		From(consts.ReceptionsTable).
 		Where(sq.Eq{
