@@ -37,8 +37,14 @@ func (s *productService) DeleteProduct(ctx context.Context, deleteProduct *model
 		return werrors.New(err, http.StatusBadRequest)
 	}
 
-	err = s.storage.DeleteProduct(ctx, deleteProduct)
+	err = s.storage.DeleteLastProduct(ctx, deleteProduct)
 	if err != nil {
+		if err == dberrors.ErrNothingToDelete {
+			return werrors.New(apperrors.ErrNoProductsInCurrReception, http.StatusBadRequest)
+		}
+		if err == dberrors.ErrDeleteImpossible {
+			return werrors.New(apperrors.ErrReceptionIsNotOpened, http.StatusBadRequest)
+		}
 		s.logger.Error("delete product: " + err.Error())
 		return werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
@@ -55,7 +61,7 @@ func (s *productService) AddProduct(ctx context.Context, addProduct *models.AddP
 	product, err := s.storage.AddProduct(ctx, addProduct)
 	if err != nil {
 		if err == dberrors.ErrInsertImpossible {
-			return nil, werrors.New(apperrors.ErrReceptionIsNotCreated, http.StatusBadRequest)
+			return nil, werrors.New(apperrors.ErrReceptionIsNotOpened, http.StatusBadRequest)
 		}
 		s.logger.Error("add product: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)

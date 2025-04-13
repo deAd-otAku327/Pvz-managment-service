@@ -66,7 +66,7 @@ func (s *receptionService) CloseReception(ctx context.Context, closeReception *m
 	reception, err := s.storage.CloseReception(ctx, closeReception)
 	if err != nil {
 		if err == dberrors.ErrUpdateImpossible {
-			return nil, werrors.New(apperrors.ErrReceptionIsNotCreated, http.StatusBadRequest)
+			return nil, werrors.New(apperrors.ErrReceptionIsNotOpened, http.StatusBadRequest)
 		}
 		s.logger.Error("close reception: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)

@@ -65,6 +65,6 @@ func (s *storage) AddProduct(ctx context.Context, addProduct *models.AddProduct)
 	return s.productStorage.AddProduct(ctx, addProduct)
 }
 
-func (s *storage) DeleteProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error {
-	return s.productStorage.DeleteProduct(ctx, deleteProduct)
+func (s *storage) DeleteLastProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error {
+	return s.productStorage.DeleteLastProduct(ctx, deleteProduct)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log/slog"
 	"pvz-service/internal/entities"
 	"pvz-service/internal/enum"
@@ -19,7 +20,7 @@ import (
 
 type ProductDB interface {
 	AddProduct(ctx context.Context, addProduct *models.AddProduct) (*models.Product, error)
-	DeleteProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error
+	DeleteLastProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error
 }
 
 type productStorage struct {
@@ -97,6 +98,72 @@ func (s *productStorage) AddProduct(ctx context.Context, addProduct *models.AddP
 	return entitymap.MapToProduct(&product), nil
 }
 
-func (s *productStorage) DeleteProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error {
-	return errors.New("testing plug")
+func (s *productStorage) DeleteLastProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error {
+	selectQuery, selArgs, err := sq.Select(consts.ID).
+		From(consts.ReceptionsTable).
+		Where(sq.Eq{
+			consts.ReceptionPvzID:  deleteProduct.PvzID,
+			consts.ReceptionStatus: enum.StatusInProgress.String(),
+		}).
+		PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return err
+	}
+
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	var receptionID int
+
+	row := tx.QueryRowContext(ctx, selectQuery, selArgs...)
+	selectErr := row.Scan(&receptionID)
+	if selectErr == nil {
+		subq := fmt.Sprintf("(SELECT %s FROM %s WHERE %s=%d ORDER BY %s DESC LIMIT 1)",
+			consts.ID, consts.ProductsTable, consts.ProductReceptionID, receptionID, consts.ProductDateTime)
+
+		deleteQuery, delArgs, err := sq.Delete(consts.ProductsTable).
+			Where(fmt.Sprintf("%s IN %s", consts.ID, subq)).
+			PlaceholderFormat(sq.Dollar).ToSql()
+		if err != nil {
+			return err
+		}
+
+		delRes, err := tx.ExecContext(ctx, deleteQuery, delArgs...)
+		if err != nil {
+			txErr := tx.Rollback()
+			if txErr != nil {
+				s.logger.Error("tx rollback error: " + txErr.Error())
+			}
+			return err
+		}
+
+		err = tx.Commit()
+		if err != nil {
+			return err
+		}
+
+		affected, err := delRes.RowsAffected()
+		if err != nil {
+			return err
+		}
+
+		if affected == 0 {
+			return dberrors.ErrNothingToDelete
+		}
+
+		return nil
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	if selectErr == sql.ErrNoRows {
+		return dberrors.ErrDeleteImpossible
+	}
+
+	return selectErr
 }

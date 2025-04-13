@@ -63,6 +63,7 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 	}
 
 	var plug int
+
 	row := tx.QueryRowContext(ctx, selectQuery, selArgs...)
 	selectErr := row.Scan(&plug)
 	if selectErr != nil && selectErr == sql.ErrNoRows {
@@ -93,7 +94,7 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 	if selectErr == nil {
 		return nil, dberrors.ErrInsertImpossible
 	} else if selectErr != sql.ErrNoRows {
-		return nil, err
+		return nil, selectErr
 	}
 
 	return entitymap.MapToReception(&reception, nil), nil
