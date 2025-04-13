@@ -38,8 +38,8 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 	selectQuery, selArgs, err := sq.Select(consts.ID).
 		From(consts.ReceptionsTable).
 		Where(sq.Eq{
-			consts.PvzID:  createReception.PvzID,
-			consts.Status: enum.StatusInProgress.String(),
+			consts.ReceptionPvzID:  createReception.PvzID,
+			consts.ReceptionStatus: enum.StatusInProgress.String(),
 		}).
 		PlaceholderFormat(sq.Dollar).ToSql()
 	if err != nil {
@@ -47,7 +47,7 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 	}
 
 	insertQuery, insArgs, err := sq.Insert(consts.ReceptionsTable).
-		Columns(consts.PvzID).
+		Columns(consts.ReceptionPvzID).
 		Values(createReception.PvzID).
 		Suffix("RETURNING *").
 		PlaceholderFormat(sq.Dollar).ToSql()
@@ -65,25 +65,23 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 	var plug int
 	row := tx.QueryRowContext(ctx, selectQuery, selArgs...)
 	selectErr := row.Scan(&plug)
-	if selectErr != nil {
-		if selectErr == sql.ErrNoRows {
-			row = tx.QueryRowContext(ctx, insertQuery, insArgs...)
-			err := row.Scan(&reception.ID, &reception.DateTime, &reception.PvzID, &reception.Status)
-			if err != nil {
-				txErr := tx.Rollback()
-				if txErr != nil {
-					s.logger.Error("tx rollback error: " + txErr.Error())
-				}
-				if pqErr, ok := err.(*pq.Error); ok {
-					if pqErr.Code.Name() == consts.PQInvalidTextRepresentation {
-						return nil, errors.Join(dberrors.ErrEnumTypeViolation, err) // For mode specifics in logs.
-					}
-					if pqErr.Code.Name() == consts.PQForeignKeyViolation {
-						return nil, dberrors.ErrForeignKeyViolation
-					}
-				}
-				return nil, err
+	if selectErr != nil && selectErr == sql.ErrNoRows {
+		row = tx.QueryRowContext(ctx, insertQuery, insArgs...)
+		err := row.Scan(&reception.ID, &reception.DateTime, &reception.PvzID, &reception.Status)
+		if err != nil {
+			txErr := tx.Rollback()
+			if txErr != nil {
+				s.logger.Error("tx rollback error: " + txErr.Error())
 			}
+			if pqErr, ok := err.(*pq.Error); ok {
+				if pqErr.Code.Name() == consts.PQInvalidTextRepresentation {
+					return nil, errors.Join(dberrors.ErrEnumTypeViolation, err) // For mode specifics in logs.
+				}
+				if pqErr.Code.Name() == consts.PQForeignKeyViolation {
+					return nil, dberrors.ErrForeignKeyViolation
+				}
+			}
+			return nil, err
 		}
 	}
 
@@ -103,10 +101,10 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 
 func (s *receptionStorage) CloseReception(ctx context.Context, closeReception *models.CloseReception) (*models.Reception, error) {
 	query, args, err := sq.Update(consts.ReceptionsTable).
-		Set(consts.Status, enum.StatusClose.String()).
+		Set(consts.ReceptionStatus, enum.StatusClose.String()).
 		Where(sq.Eq{
-			consts.PvzID:  closeReception.PvzID,
-			consts.Status: enum.StatusInProgress.String(),
+			consts.ReceptionPvzID:  closeReception.PvzID,
+			consts.ReceptionStatus: enum.StatusInProgress.String(),
 		}).
 		Suffix("RETURNING *").
 		PlaceholderFormat(sq.Dollar).ToSql()

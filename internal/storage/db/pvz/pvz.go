@@ -34,7 +34,7 @@ func New(db *sql.DB, logger *slog.Logger) PvzDB {
 
 func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz) (*models.Pvz, error) {
 	insertQuery, args, err := sq.Insert(consts.PvzsTable).
-		Columns(consts.City).
+		Columns(consts.PvzCity).
 		Values(pvzCreate.City).
 		Suffix("RETURNING *").
 		PlaceholderFormat(sq.Dollar).ToSql()

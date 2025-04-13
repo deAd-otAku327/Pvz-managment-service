@@ -5,7 +5,16 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
+	"pvz-service/internal/entities"
+	"pvz-service/internal/enum"
+	entitymap "pvz-service/internal/mappers/entity"
 	"pvz-service/internal/models"
+	"pvz-service/internal/storage/db/dberrors"
+	"pvz-service/internal/storage/db/shared/consts"
+
+	sq "github.com/Masterminds/squirrel"
+
+	"github.com/lib/pq"
 )
 
 type ProductDB interface {
@@ -26,7 +35,66 @@ func New(db *sql.DB, logger *slog.Logger) ProductDB {
 }
 
 func (s *productStorage) AddProduct(ctx context.Context, addProduct *models.AddProduct) (*models.Product, error) {
-	return nil, errors.New("testing plug")
+	selectQuery, selArgs, err := sq.Select(consts.ID).
+		From(consts.ReceptionsTable).
+		Where(sq.Eq{
+			consts.ReceptionPvzID:  addProduct.PvzID,
+			consts.ReceptionStatus: enum.StatusInProgress.String(),
+		}).
+		PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var receptionID int
+	row := tx.QueryRowContext(ctx, selectQuery, selArgs...)
+	selectErr := row.Scan(&receptionID)
+
+	var product entities.Product
+
+	if selectErr == nil {
+		insertQuery, insArgs, err := sq.Insert(consts.ProductsTable).
+			Columns(consts.ProductReceptionID, consts.ProductType).
+			Values(receptionID, addProduct.Type).
+			Suffix("RETURNING *").
+			PlaceholderFormat(sq.Dollar).ToSql()
+		if err != nil {
+			return nil, err
+		}
+
+		row = tx.QueryRowContext(ctx, insertQuery, insArgs...)
+		err = row.Scan(&product.ID, &product.DateTime, &product.ReceptionID, &product.Type)
+		if err != nil {
+			txErr := tx.Rollback()
+			if txErr != nil {
+				s.logger.Error("tx rollback error: " + txErr.Error())
+			}
+			if pqErr, ok := err.(*pq.Error); ok {
+				if pqErr.Code.Name() == consts.PQInvalidTextRepresentation {
+					return nil, errors.Join(dberrors.ErrEnumTypeViolation, err) // For mode specifics in logs.
+				}
+			}
+			return nil, err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+
+	if errors.Is(selectErr, sql.ErrNoRows) {
+		return nil, dberrors.ErrInsertImpossible
+	} else if selectErr != nil {
+		return nil, err
+	}
+
+	return entitymap.MapToProduct(&product), nil
 }
 
 func (s *productStorage) DeleteProduct(ctx context.Context, deleteProduct *models.DeleteProduct) error {

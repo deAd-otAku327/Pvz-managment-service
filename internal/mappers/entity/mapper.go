@@ -40,5 +40,10 @@ func MapToReception(reception *entities.Reception, prods []*entities.Product) *m
 }
 
 func MapToProduct(product *entities.Product) *models.Product {
-	return &models.Product{}
+	return &models.Product{
+		ID:          product.ID,
+		DateTime:    product.DateTime,
+		ReceptionID: product.ReceptionID,
+		Type:        product.Type,
+	}
 }

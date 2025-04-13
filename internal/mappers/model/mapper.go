@@ -29,5 +29,10 @@ func MapToReceptionResponse(reception *models.Reception) *dto.ReceptionResponseD
 }
 
 func MapToProductResponse(product *models.Product) *dto.ProductResponseDTO {
-	return &dto.ProductResponseDTO{}
+	return &dto.ProductResponseDTO{
+		ID:          product.ID,
+		DateTime:    product.DateTime,
+		ReceptionID: product.ReceptionID,
+		Type:        product.Type,
+	}
 }

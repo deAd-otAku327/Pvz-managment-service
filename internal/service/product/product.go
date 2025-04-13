@@ -10,6 +10,7 @@ import (
 	modelmap "pvz-service/internal/mappers/model"
 	"pvz-service/internal/models"
 	"pvz-service/internal/storage/db"
+	"pvz-service/internal/storage/db/dberrors"
 	"pvz-service/pkg/werrors"
 )
 
@@ -53,6 +54,9 @@ func (s *productService) AddProduct(ctx context.Context, addProduct *models.AddP
 
 	product, err := s.storage.AddProduct(ctx, addProduct)
 	if err != nil {
+		if err == dberrors.ErrInsertImpossible {
+			return nil, werrors.New(apperrors.ErrReceptionIsNotCreated, http.StatusBadRequest)
+		}
 		s.logger.Error("add product: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}
