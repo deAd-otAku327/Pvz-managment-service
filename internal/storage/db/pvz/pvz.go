@@ -3,14 +3,13 @@ package pvz
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"log/slog"
 	"pvz-service/internal/entities"
 	entitymap "pvz-service/internal/mappers/entity"
 	"pvz-service/internal/models"
-	"pvz-service/internal/storage/db/dberrors"
 	"pvz-service/internal/storage/db/shared/consts"
+	"pvz-service/internal/storage/db/shared/helper"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -24,12 +23,14 @@ type PvzDB interface {
 
 type pvzStorage struct {
 	db     *sql.DB
+	helper helper.DBHepler
 	logger *slog.Logger
 }
 
 func New(db *sql.DB, logger *slog.Logger) PvzDB {
 	return &pvzStorage{
 		db:     db,
+		helper: helper.New(db),
 		logger: logger,
 	}
 }
@@ -48,12 +49,7 @@ func (s *pvzStorage) CreatePvz(ctx context.Context, pvzCreate *entities.CreatePv
 	row := s.db.QueryRowContext(ctx, insertQuery, args...)
 	err = row.Scan(&pvz.ID, &pvz.RegistrationDate, &pvz.City)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			if pqErr.Code.Name() == consts.PQInvalidTextRepresentation {
-				return nil, errors.Join(dberrors.ErrEnumTypeViolation, err)
-			}
-		}
-		return nil, err
+		return nil, s.helper.CatchPQErrors(err)
 	}
 
 	return entitymap.MapToPvz(&pvz), nil

@@ -9,7 +9,7 @@ var (
 	ErrSmthWentWrong             = errors.New("something went wrong")
 	ErrInvalidPvzID              = errors.New("invalid pvz id")
 	ErrInvalidReceptionID        = errors.New("invalid reception id")
-	ErrReceptionIsNotClosed      = errors.New("there is unclosed reception in this pvz")
+	ErrReceptionIsNotClosed      = errors.New("there is open reception in this pvz")
 	ErrReceptionIsNotOpened      = errors.New("there is no opened reception in this pvz")
 	ErrNoProductsInCurrReception = errors.New("there is no products in current reception in this pvz")
 	ErrInvalidRole               = errors.New("invalid role")

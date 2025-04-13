@@ -3,18 +3,17 @@ package reception
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"log/slog"
 	"pvz-service/internal/entities"
 	"pvz-service/internal/enum"
 	"pvz-service/internal/models"
 	"pvz-service/internal/storage/db/dberrors"
 	"pvz-service/internal/storage/db/shared/consts"
+	"pvz-service/internal/storage/db/shared/helper"
 
 	entitymap "pvz-service/internal/mappers/entity"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/lib/pq"
 )
 
 type ReceptionDB interface {
@@ -24,63 +23,41 @@ type ReceptionDB interface {
 
 type receptionStorage struct {
 	db     *sql.DB
+	helper helper.DBHepler
 	logger *slog.Logger
 }
 
 func New(db *sql.DB, logger *slog.Logger) ReceptionDB {
 	return &receptionStorage{
 		db:     db,
+		helper: helper.New(db),
 		logger: logger,
 	}
 }
 
 func (s *receptionStorage) CreateReception(ctx context.Context, createReception *entities.CreateReception) (*models.Reception, error) {
-	selectQuery, selArgs, err := sq.Select(consts.ID).
-		From(consts.ReceptionsTable).
-		Where(sq.Eq{
-			consts.ReceptionPvzID:  createReception.PvzID,
-			consts.ReceptionStatus: enum.StatusInProgress.String(),
-		}).
-		PlaceholderFormat(sq.Dollar).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	insertQuery, insArgs, err := sq.Insert(consts.ReceptionsTable).
-		Columns(consts.ReceptionPvzID).
-		Values(createReception.PvzID).
-		Suffix("RETURNING *").
-		PlaceholderFormat(sq.Dollar).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var reception entities.Reception
-
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var plug int
+	isOpenedReception, _, err := s.helper.CheckOpenedReceptions(ctx, tx, createReception.PvzID)
+	if err != nil {
+		txErr := tx.Rollback() // For safety.
+		if txErr != nil {
+			s.logger.Error("tx rollback error: " + txErr.Error())
+		}
+		return nil, err
+	}
 
-	row := tx.QueryRowContext(ctx, selectQuery, selArgs...)
-	selectErr := row.Scan(&plug)
-	if selectErr != nil && selectErr == sql.ErrNoRows {
-		row = tx.QueryRowContext(ctx, insertQuery, insArgs...)
-		err := row.Scan(&reception.ID, &reception.DateTime, &reception.PvzID, &reception.Status)
+	var reception *entities.Reception
+
+	if !isOpenedReception {
+		reception, err = s.insertNewReception(ctx, tx, createReception.PvzID)
 		if err != nil {
 			txErr := tx.Rollback()
 			if txErr != nil {
 				s.logger.Error("tx rollback error: " + txErr.Error())
-			}
-			if pqErr, ok := err.(*pq.Error); ok {
-				if pqErr.Code.Name() == consts.PQInvalidTextRepresentation {
-					return nil, errors.Join(dberrors.ErrEnumTypeViolation, err) // For mode specifics in logs.
-				}
-				if pqErr.Code.Name() == consts.PQForeignKeyViolation {
-					return nil, dberrors.ErrForeignKeyViolation
-				}
 			}
 			return nil, err
 		}
@@ -91,13 +68,11 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 		return nil, err
 	}
 
-	if selectErr == nil {
+	if isOpenedReception {
 		return nil, dberrors.ErrInsertImpossible
-	} else if selectErr != sql.ErrNoRows {
-		return nil, selectErr
 	}
 
-	return entitymap.MapToReception(&reception, nil), nil
+	return entitymap.MapToReception(reception, nil), nil
 }
 
 func (s *receptionStorage) CloseReception(ctx context.Context, closeReception *entities.CloseReception) (*models.Reception, error) {
@@ -125,4 +100,25 @@ func (s *receptionStorage) CloseReception(ctx context.Context, closeReception *e
 	}
 
 	return entitymap.MapToReception(&reception, nil), nil
+}
+
+func (s *receptionStorage) insertNewReception(ctx context.Context, tx *sql.Tx, pvzID int) (*entities.Reception, error) {
+	query, args, err := sq.Insert(consts.ReceptionsTable).
+		Columns(consts.ReceptionPvzID).
+		Values(pvzID).
+		Suffix("RETURNING *").
+		PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var reception entities.Reception
+
+	row := tx.QueryRowContext(ctx, query, args...)
+	err = row.Scan(&reception.ID, &reception.DateTime, &reception.PvzID, &reception.Status)
+	if err != nil {
+		return nil, s.helper.CatchPQErrors(err)
+	}
+
+	return &reception, nil
 }
