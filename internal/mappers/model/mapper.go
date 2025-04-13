@@ -15,8 +15,25 @@ func MapToPvzResponse(pvz *models.Pvz) *dto.PvzResponseDTO {
 	}
 }
 
-func MapToGetPvzListResponse(pvzList *models.PvzList) *dto.GetPvzListResponseDTO {
-	return &dto.GetPvzListResponseDTO{}
+func MapToGetPvzListResponse(pvzList models.PvzList) *dto.GetPvzListResponseDTO {
+	pvzListResponse := make(dto.GetPvzListResponseDTO, 0)
+	for _, pwr := range pvzList {
+		pvzWithReceptions := dto.PvzWithReceptionsDTO{
+			Pvz: MapToPvzResponse(pwr.Pvz),
+		}
+		for _, r := range pwr.Receptions {
+			receptionWithProducts := dto.ReceptionWithProductsDTO{
+				Reception: MapToReceptionResponse(r),
+			}
+			for _, p := range r.Products {
+				receptionWithProducts.Products = append(receptionWithProducts.Products, MapToProductResponse(p))
+			}
+			pvzWithReceptions.Receptions = append(pvzWithReceptions.Receptions, &receptionWithProducts)
+		}
+		pvzListResponse = append(pvzListResponse, &pvzWithReceptions)
+	}
+
+	return &pvzListResponse
 }
 
 func MapToReceptionResponse(reception *models.Reception) *dto.ReceptionResponseDTO {
@@ -31,7 +48,7 @@ func MapToReceptionResponse(reception *models.Reception) *dto.ReceptionResponseD
 func MapToProductResponse(product *models.Product) *dto.ProductResponseDTO {
 	return &dto.ProductResponseDTO{
 		ID:          product.ID,
-		DateTime:    product.DateTime,
+		DateTime:    product.DateTime.Format(DateTimeFormat),
 		ReceptionID: product.ReceptionID,
 		Type:        product.Type,
 	}

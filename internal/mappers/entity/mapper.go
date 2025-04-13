@@ -5,8 +5,26 @@ import (
 	"pvz-service/internal/models"
 )
 
-func MapToPvzList(pvzs []*entities.Pvz, recepts []*entities.Reception, products []*entities.Product) *models.PvzList {
-	return &models.PvzList{}
+func MapToPvzList(pvzs []*entities.Pvz, receptions []*entities.Reception, products []*entities.Product) models.PvzList {
+	receptionIDToProducts := make(map[int][]*entities.Product)
+	for _, p := range products {
+		receptionIDToProducts[p.ReceptionID] = append(receptionIDToProducts[p.ReceptionID], p)
+	}
+
+	pvzList := make(models.PvzList, 0)
+	for _, pvz := range pvzs {
+		pvzWithReceptions := models.PvzWithReceptions{
+			Pvz: MapToPvz(pvz),
+		}
+		for _, r := range receptions {
+			if pvz.ID == r.PvzID {
+				pvzWithReceptions.Receptions = append(pvzWithReceptions.Receptions, MapToReception(r, receptionIDToProducts[r.ID]))
+			}
+		}
+		pvzList = append(pvzList, &pvzWithReceptions)
+	}
+
+	return pvzList
 }
 
 func MapToPvz(pvz *entities.Pvz) *models.Pvz {

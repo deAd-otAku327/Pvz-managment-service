@@ -3,12 +3,17 @@ package dto
 import (
 	"pvz-service/internal/dto"
 	"pvz-service/internal/models"
+	"time"
 )
 
 func MapToPvzFilterParams(fp *dto.PvzFilterParamsDTO) *models.PvzFilterParams {
+	endDate := fp.EndDate.Date
+	if endDate.Equal(time.Time{}) {
+		endDate = time.Now()
+	}
 	return &models.PvzFilterParams{
 		StartDate: fp.StartDate.Date,
-		EndDate:   fp.EndDate.Date,
+		EndDate:   endDate,
 		Page:      fp.Page,
 		Limit:     fp.Limit,
 	}

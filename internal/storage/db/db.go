@@ -49,7 +49,7 @@ func (s *storage) CreatePvz(ctx context.Context, pvzCreate *models.CreatePvz) (*
 	return s.pvzStorage.CreatePvz(ctx, pvzCreate)
 }
 
-func (s *storage) GetPvzList(ctx context.Context, filters *models.PvzFilterParams) (*models.PvzList, error) {
+func (s *storage) GetPvzList(ctx context.Context, filters *models.PvzFilterParams) (models.PvzList, error) {
 	return s.pvzStorage.GetPvzList(ctx, filters)
 }
 
