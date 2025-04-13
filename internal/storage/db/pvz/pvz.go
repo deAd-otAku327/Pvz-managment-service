@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log/slog"
 	"pvz-service/internal/entities"
 	entitymap "pvz-service/internal/mappers/entity"
 	"pvz-service/internal/models"
@@ -20,12 +21,14 @@ type PvzDB interface {
 }
 
 type pvzStorage struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func New(db *sql.DB) PvzDB {
+func New(db *sql.DB, logger *slog.Logger) PvzDB {
 	return &pvzStorage{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 

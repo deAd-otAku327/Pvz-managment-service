@@ -28,7 +28,7 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 	cryptor := cryptor.New()
 	tokenizer := tokenizer.New(AppName, cfg.JWTKey)
 
-	storage, err := db.New(cfg.DBConn)
+	storage, err := db.New(cfg.DBConn, logger)
 	if err != nil {
 		return nil, err
 	}

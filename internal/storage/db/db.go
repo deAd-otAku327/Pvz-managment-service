@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 	"pvz-service/internal/config"
 	"pvz-service/internal/models"
 	"pvz-service/internal/storage/db/product"
@@ -24,7 +25,7 @@ type storage struct {
 	productStorage   product.ProductDB
 }
 
-func New(cfg config.DBConn) (DB, error) {
+func New(cfg config.DBConn, logger *slog.Logger) (DB, error) {
 	database, err := sql.Open("postgres", cfg.URL)
 	if err != nil {
 		return nil, err
@@ -38,9 +39,9 @@ func New(cfg config.DBConn) (DB, error) {
 	database.SetMaxOpenConns(cfg.MaxOpenConns)
 
 	return &storage{
-		pvzStorage:       pvz.New(database),
-		receptionStorage: reception.New(database),
-		productStorage:   product.New(database),
+		pvzStorage:       pvz.New(database, logger),
+		receptionStorage: reception.New(database, logger),
+		productStorage:   product.New(database, logger),
 	}, nil
 }
 

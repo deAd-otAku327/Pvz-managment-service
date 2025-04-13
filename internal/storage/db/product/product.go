@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log/slog"
 	"pvz-service/internal/models"
 )
 
@@ -13,12 +14,14 @@ type ProductDB interface {
 }
 
 type productStorage struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func New(db *sql.DB) ProductDB {
+func New(db *sql.DB, logger *slog.Logger) ProductDB {
 	return &productStorage{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
