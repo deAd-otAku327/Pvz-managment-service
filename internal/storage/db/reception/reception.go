@@ -34,7 +34,10 @@ func New(db *sql.DB) ReceptionDB {
 func (s *receptionStorage) CreateReception(ctx context.Context, createReception *models.CreateReception) (*models.Reception, error) {
 	selectQuery, selArgs, err := sq.Select(consts.ID).
 		From(consts.ReceptionsTable).
-		Where(sq.Eq{consts.PvzID: createReception.PvzID, consts.Status: enum.InProgress.String()}).
+		Where(sq.Eq{
+			consts.PvzID:  createReception.PvzID,
+			consts.Status: enum.StatusInProgress.String(),
+		}).
 		PlaceholderFormat(sq.Dollar).ToSql()
 	if err != nil {
 		return nil, err
@@ -79,7 +82,7 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 			return nil, err
 		}
 
-		return nil, dberrors.ErrUpdateProhibited
+		return nil, dberrors.ErrInsertImpossible
 	}
 
 	err = tx.Commit()
@@ -91,5 +94,28 @@ func (s *receptionStorage) CreateReception(ctx context.Context, createReception 
 }
 
 func (s *receptionStorage) CloseReception(ctx context.Context, closeReception *models.CloseReception) (*models.Reception, error) {
-	return nil, errors.New("testing plug")
+	query, args, err := sq.Update(consts.ReceptionsTable).
+		Set(consts.Status, enum.StatusClose.String()).
+		Where(sq.Eq{
+			consts.PvzID:  closeReception.PvzID,
+			consts.Status: enum.StatusInProgress.String(),
+		}).
+		Suffix("RETURNING *").
+		PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var reception entities.Reception
+
+	row := s.db.QueryRowContext(ctx, query, args...)
+	err = row.Scan(&reception.ID, &reception.DateTime, &reception.PvzID, &reception.Status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, dberrors.ErrUpdateImpossible
+		}
+		return nil, err
+	}
+
+	return entitymap.MapToReception(&reception, nil), nil
 }

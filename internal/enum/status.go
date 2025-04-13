@@ -3,18 +3,18 @@ package enum
 type ReceptionStatus int
 
 const (
-	InProgress ReceptionStatus = iota
-	Close
+	StatusInProgress ReceptionStatus = iota
+	StatusClose
 )
 
 var statusToName = map[ReceptionStatus]string{
-	InProgress: "in_progress",
-	Close:      "close",
+	StatusInProgress: "in_progress",
+	StatusClose:      "close",
 }
 
 var nameTostatus = map[string]ReceptionStatus{
-	"in_progress": InProgress,
-	"close":       Close,
+	"in_progress": StatusInProgress,
+	"close":       StatusClose,
 }
 
 func CheckStatus(city string) bool {

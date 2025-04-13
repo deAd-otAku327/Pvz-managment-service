@@ -41,7 +41,7 @@ func (s *receptionService) CreateReception(ctx context.Context, createReception 
 		if err == dberrors.ErrForeignKeyViolation {
 			return nil, werrors.New(apperrors.ErrInvalidPvzID, http.StatusBadRequest)
 		}
-		if err == dberrors.ErrUpdateProhibited {
+		if err == dberrors.ErrInsertImpossible {
 			return nil, werrors.New(apperrors.ErrReceptionIsNotClosed, http.StatusBadRequest)
 		}
 		s.logger.Error("create reception: " + err.Error())
@@ -65,6 +65,9 @@ func (s *receptionService) CloseReception(ctx context.Context, closeReception *m
 
 	reception, err := s.storage.CloseReception(ctx, closeReception)
 	if err != nil {
+		if err == dberrors.ErrUpdateImpossible {
+			return nil, werrors.New(apperrors.ErrReceptionIsNotCreated, http.StatusBadRequest)
+		}
 		s.logger.Error("close reception: " + err.Error())
 		return nil, werrors.New(apperrors.ErrSmthWentWrong, http.StatusInternalServerError)
 	}

@@ -3,21 +3,21 @@ package enum
 type ProductType int
 
 const (
-	Electrinics ProductType = iota
-	Cloth
-	Shoes
+	TypeElectrinics ProductType = iota
+	TypeCloth
+	TypeShoes
 )
 
 var productTypeToName = map[ProductType]string{
-	Electrinics: "электроника",
-	Cloth:       "одежда",
-	Shoes:       "обувь",
+	TypeElectrinics: "электроника",
+	TypeCloth:       "одежда",
+	TypeShoes:       "обувь",
 }
 
 var nameToProductType = map[string]ProductType{
-	"электроника": Electrinics,
-	"одежда":      Cloth,
-	"обувь":       Shoes,
+	"электроника": TypeElectrinics,
+	"одежда":      TypeCloth,
+	"обувь":       TypeShoes,
 }
 
 func CheckProductType(pt string) bool {
