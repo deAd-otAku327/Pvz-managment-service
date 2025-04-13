@@ -53,12 +53,12 @@ func (c *authController) DummyLogin() http.HandlerFunc {
 
 func (c *authController) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		response.MakeResponseJSON(w, http.StatusNotImplemented, nil)
 	}
 }
 
 func (c *authController) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		response.MakeResponseJSON(w, http.StatusNotImplemented, nil)
 	}
 }
