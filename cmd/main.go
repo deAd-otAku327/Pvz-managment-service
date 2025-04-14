@@ -9,7 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	server "pvz-service/internal/app"
+	"pvz-service/internal/app"
 	"pvz-service/internal/config"
 	"pvz-service/pkg/logger"
 	"syscall"
@@ -41,7 +41,7 @@ func main() {
 	logger, err := logger.New(os.Stdout, cfg.LogLevel)
 	reportOnError(err)
 
-	server, err := server.New(cfg, logger)
+	server, err := app.New(cfg, logger)
 	reportOnError(err)
 
 	go func() {

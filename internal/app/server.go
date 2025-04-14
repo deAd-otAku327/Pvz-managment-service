@@ -1,4 +1,4 @@
-package server
+package app
 
 import (
 	"context"
@@ -21,7 +21,7 @@ const AppName = "pvz-management-service"
 
 type Server struct {
 	cfg    *config.Config
-	server *http.Server
+	Server *http.Server
 }
 
 func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
@@ -74,7 +74,7 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 
 	return &Server{
 		cfg: cfg,
-		server: &http.Server{
+		Server: &http.Server{
 			Addr:    fmt.Sprintf("%s:%s", cfg.Server.Host, cfg.Server.Port),
 			Handler: router,
 		},
@@ -82,10 +82,10 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 }
 
 func (s *Server) Run() error {
-	slog.Info("server starting on", slog.String("address", s.server.Addr))
-	return s.server.ListenAndServe()
+	slog.Info("server starting on", slog.String("address", s.Server.Addr))
+	return s.Server.ListenAndServe()
 }
 
 func (s *Server) Shutdown() error {
-	return s.server.Shutdown(context.Background())
+	return s.Server.Shutdown(context.Background())
 }
