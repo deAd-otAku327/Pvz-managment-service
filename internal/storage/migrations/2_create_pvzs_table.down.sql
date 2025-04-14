@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS pvzs;
+DROP TYPE IF EXISTS city_enum;
