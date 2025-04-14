@@ -30,6 +30,9 @@ stop:
 remove:
 	docker-compose down
 
+test:
+	go test ./internal/... -coverprofile=cover.out && go tool cover -func cover.out
+
 integration:
 	cd tests/integration && go test -v -db=$(TEST_DB_NAME)
 
