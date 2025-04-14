@@ -60,7 +60,7 @@ make migrate-up
 make migrate-down
 ```
 
-8. Запсукает unit-тестирование директории ./internal с подсчетом total-покрытия
+8. Запуcкает unit-тестирование директории ./internal с подсчетом total-покрытия
 ```bash
 make test
 ```
